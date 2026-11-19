@@ -1,0 +1,10 @@
+{
+  "name": "pers-inspection-vercel",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": "22.x" },
+  "dependencies": {
+    "@libsql/client": "^0.15.0"
+  }
+}
