@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گروه پرس | سامانه بازرسی تجهیزات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c1017; --bg2:#111722; --panel:#161e2b; --panel2:#1b2534;
+    --line:#26334a; --txt:#e8eef8; --muted:#93a3ba;
+    --amber:#f5a524; --ok:#2ecc71; --warn:#f0b429; --bad:#ef5350; --info:#4aa8ff;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1100px 500px at 85% -10%, #1d2a3d 0%, transparent 60%),
+      radial-gradient(900px 500px at 5% 0%, #24301f 0%, transparent 55%),
+      var(--bg);
+    color:var(--txt);
+    font-family:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
+    min-height:100vh; font-size:15px; line-height:1.7;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+
+  header.top{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:14px 16px;margin-bottom:18px;
+    background:linear-gradient(180deg,var(--panel) 0%,var(--bg2) 100%);
+    border:1px solid var(--line);border-radius:18px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{
+    width:46px;height:46px;flex:0 0 46px;border-radius:12px;
+    background:linear-gradient(145deg,var(--amber),#e0821a);
+    display:grid;place-items:center;color:#20160a;font-weight:700;font-size:22px;
+    box-shadow:0 6px 16px rgba(245,165,36,.25);
+  }
+  .logo.word{font-size:12px;letter-spacing:1.2px}
+  .logo img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+  .brand h1{font-size:17px;margin:0;font-weight:700;white-space:nowrap}
+  .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+  .userbox{margin-inline-start:auto;display:flex;align-items:center;gap:10px}
+  .userbox .who{text-align:left;font-size:12px;color:var(--muted);line-height:1.4}
+  .userbox .who b{display:block;color:var(--txt);font-size:13px;font-weight:500}
+  .avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#22304a;border:1px solid var(--line)}
+  .avatar.ph{display:grid;place-items:center;color:var(--muted);font-size:14px}
+  .clock{font-size:12px;color:var(--muted);text-align:left}
+
+  nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  nav.tabs button{
+    font:inherit;font-size:14px;padding:9px 16px;border-radius:11px;cursor:pointer;
+    background:var(--panel);color:var(--muted);border:1px solid var(--line);
+    transition:.15s;display:flex;align-items:center;gap:7px;
+  }
+  nav.tabs button:hover{color:var(--txt);border-color:#35486a}
+  nav.tabs button.active{
+    background:linear-gradient(180deg,#22314a,#1a2434);
+    color:#fff;border-color:var(--amber);box-shadow:0 0 0 1px rgba(245,165,36,.25) inset;
+  }
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{
+    background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;
+  }
+  .kpi:before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--muted);opacity:.8}
+  .kpi.ok:before{background:var(--ok)} .kpi.warn:before{background:var(--warn)}
+  .kpi.bad:before{background:var(--bad)} .kpi.amber:before{background:var(--amber)}
+  .kpi .n{font-size:26px;font-weight:700;line-height:1.2}
+  .kpi .l{font-size:12px;color:var(--muted)}
+
+  .panel{
+    background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:18px;
+  }
+  .panel h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap}
+  .panel h2 .sub{font-size:12px;color:var(--muted);font-weight:400;margin-inline-start:auto}
+  .panel .hint{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:660px}
+  th{
+    text-align:right;font-weight:500;color:var(--muted);font-size:12px;
+    padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  td{padding:11px 10px;border-bottom:1px solid rgba(38,51,74,.6);vertical-align:middle}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  td.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--amber);white-space:nowrap}
+  .eq-name{font-weight:500}
+  .eq-sub{font-size:11.5px;color:var(--muted)}
+
+  .badge{
+    display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;
+    border:1px solid transparent;white-space:nowrap;font-weight:500;
+  }
+  .b-ok{background:rgba(46,204,113,.13);color:#5ee397;border-color:rgba(46,204,113,.3)}
+  .b-warn{background:rgba(240,180,41,.13);color:#f3c65c;border-color:rgba(240,180,41,.3)}
+  .b-bad{background:rgba(239,83,80,.13);color:#ff8b88;border-color:rgba(239,83,80,.32)}
+  .b-none{background:rgba(147,163,186,.12);color:#a9b7cb;border-color:rgba(147,163,186,.28)}
+  .b-info{background:rgba(74,168,255,.13);color:#84c3ff;border-color:rgba(74,168,255,.3)}
+
+  .btn{
+    font:inherit;font-size:13px;padding:8px 14px;border-radius:10px;cursor:pointer;
+    border:1px solid var(--line);background:var(--panel2);color:var(--txt);
+    display:inline-flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:#3d5478;background:#223047}
+  .btn.primary{
+    background:linear-gradient(180deg,var(--amber),#dc8c14);color:#221703;
+    border-color:#e9a234;font-weight:700;
+  }
+  .btn.primary:hover{filter:brightness(1.07)}
+  .btn.ghost{background:transparent}
+  .btn.sm{font-size:12px;padding:6px 11px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .inline{display:inline;margin:0}
+
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  input[type=text],input[type=number],input[type=search],input[type=password],input[type=url],select,textarea{
+    width:100%;font:inherit;font-size:14px;padding:10px 12px;border-radius:10px;
+    background:#0e141d;border:1px solid var(--line);color:var(--txt);outline:none;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,165,36,.12)}
+  textarea{resize:vertical;min-height:74px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .search{max-width:280px}
+
+  .chk{display:flex;flex-direction:column;gap:8px}
+  .chk-item{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#0f151f;
+  }
+  .chk-item .t{flex:1 1 240px;font-size:13.5px}
+  .chk-item .t .num{color:var(--amber);font-size:11.5px;margin-inline-end:6px}
+  .seg{display:flex;gap:4px;flex:0 0 auto}
+  .seg label{
+    font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--line);color:var(--muted);background:#131b26;user-select:none;
+  }
+  .seg input{position:absolute;opacity:0;pointer-events:none}
+  .seg label:has(input[value=ok]:checked){background:rgba(46,204,113,.16);border-color:var(--ok);color:#7ff0ae}
+  .seg label:has(input[value=fail]:checked){background:rgba(239,83,80,.16);border-color:var(--bad);color:#ffa3a1}
+  .seg label:has(input[value=na]:checked){background:rgba(147,163,186,.16);border-color:#7a8aa0;color:#cdd7e4}
+  .chk-item.flagged{border-color:rgba(239,83,80,.5);background:rgba(239,83,80,.05)}
+
+  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+  .qr-card{
+    background:#f7f9fc;color:#101820;border-radius:14px;padding:12px;text-align:center;
+    border:1px solid #dbe3ee;
+  }
+  .qr-card .box{background:#fff;border-radius:10px;padding:6px;display:grid;place-items:center;min-height:150px}
+  .qr-card .box svg{width:100%;height:auto;max-width:160px;display:block}
+  .qr-card .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:14px;margin-top:8px;letter-spacing:.5px}
+  .qr-card .nm{font-size:11.5px;color:#4b586b;line-height:1.5}
+  .qr-card .fallback{font-size:10.5px;color:#8a94a6;word-break:break-all;padding:8px}
+
+  .empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:13.5px}
+  .notice{
+    padding:12px 14px;border-radius:12px;font-size:13px;
+    background:rgba(74,168,255,.08);border:1px solid rgba(74,168,255,.25);color:#bfd8f5;
+  }
+  .notice.good{background:rgba(46,204,113,.08);border-color:rgba(46,204,113,.3);color:#bdf3d3}
+  .notice.warn{background:rgba(240,180,41,.08);border-color:rgba(240,180,41,.3);color:#f6dfa8}
+  .mount{font-size:11.5px;color:var(--muted);margin-top:8px}
+  .detail-row td{background:#0d131c !important}
+  .detail-list{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0;padding:0;list-style:none}
+  .detail-list li{font-size:11.5px;padding:3px 9px;border-radius:7px;background:rgba(239,83,80,.12);color:#ffa3a1;border:1px solid rgba(239,83,80,.28)}
+  .footnote{font-size:11.5px;color:#6f7f95;text-align:center;margin-top:26px;line-height:2}
+
+  /* ================= قالب شیشه‌ای ================= */
+  body{
+    background:
+      radial-gradient(900px 520px at 88% -8%, rgba(245,165,36,.20), transparent 62%),
+      radial-gradient(820px 480px at 4% 2%, rgba(74,168,255,.18), transparent 58%),
+      radial-gradient(900px 620px at 50% 108%, rgba(46,204,113,.10), transparent 60%),
+      linear-gradient(165deg,#080c12,#0c131d 45%,#080c12);
+    background-attachment:fixed;
+  }
+  header.top,nav.tabs,.panel,.kpi,.chk-item,.authcard{
+    -webkit-backdrop-filter:blur(16px) saturate(150%);
+    backdrop-filter:blur(16px) saturate(150%);
+  }
+  header.top{
+    background:linear-gradient(170deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 18px 45px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .logo{
+    background:linear-gradient(160deg,rgba(255,255,255,.25),rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.30);color:#ffd99a;
+    box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  nav.tabs{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:8px;gap:6px}
+  nav.tabs button{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);color:#b9c6d8}
+  nav.tabs button:hover{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.22)}
+  nav.tabs button.active{
+    background:linear-gradient(170deg,rgba(245,165,36,.34),rgba(245,165,36,.14));
+    border-color:rgba(245,165,36,.55);color:#fff;
+    box-shadow:0 10px 24px rgba(245,165,36,.22), inset 0 1px 0 rgba(255,255,255,.30);
+  }
+  .panel{
+    background:linear-gradient(170deg,rgba(255,255,255,.085),rgba(255,255,255,.028));
+    border:1px solid rgba(255,255,255,.14);border-radius:20px;
+    box-shadow:0 20px 48px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.16);
+  }
+  .kpi{
+    background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.13);
+    box-shadow:0 14px 34px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.15);
+  }
+  .kpi:before{width:3px;opacity:1}
+  .chk-item{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12)}
+  .btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26)}
+  .btn.primary{
+    background:linear-gradient(170deg,#ffc251,#e89412);border-color:rgba(255,214,140,.55);color:#221703;
+    box-shadow:0 10px 24px rgba(245,165,36,.28), inset 0 1px 0 rgba(255,255,255,.45);
+  }
+  .btn.primary:hover{background:linear-gradient(170deg,#ffcf70,#f09c17)}
+  .seg label{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  input[type=text],input[type=number],input[type=search],input[type=password],input[type=url],select,textarea{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:12px;
+  }
+  th{border-bottom:1px solid rgba(255,255,255,.12)}
+  td{border-bottom:1px solid rgba(255,255,255,.07)}
+  .avatar{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+
+  .glass-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:14px;margin-bottom:14px}
+  .chart-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:12px}
+  .chart-box svg{width:100%;height:auto;display:block}
+  .chart-title{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .charts{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;margin-bottom:16px}
+  @media (max-width:760px){.charts{grid-template-columns:1fr}}
+
+  .test-q{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;margin-bottom:10px}
+  .test-q .qt{font-size:13.5px;margin-bottom:10px;line-height:1.9}
+  .test-q .cat{font-size:10.5px;color:#ffd08a;background:rgba(245,165,36,.14);border:1px solid rgba(245,165,36,.3);padding:2px 8px;border-radius:999px;margin-inline-end:8px}
+  .opt{display:flex;align-items:flex-start;gap:8px;font-size:13px;padding:7px 10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+  .opt:hover{background:rgba(255,255,255,.07)}
+  .opt input{margin-top:5px}
+  .opt:has(input:checked){background:rgba(245,165,36,.16);border-color:rgba(245,165,36,.45)}
+
+  @media print{
+    body{background:#fff !important;color:#000}
+    header.top,nav.tabs,.no-print{display:none !important}
+    .panel,.kpi,.glass-box,.chart-box,.chk-item{background:#fff !important;border:1px solid #ccc !important;box-shadow:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+    .charts{grid-template-columns:1fr 1fr}
+  }
+
+  .authcard{max-width:520px;margin:6vh auto;text-align:center;padding:34px 26px}
+  .authcard .big{font-size:44px;line-height:1;margin-bottom:14px}
+  .authcard h2{justify-content:center;font-size:19px;margin-bottom:10px}
+  .authcard p{color:var(--muted);font-size:13.5px;margin:0 0 20px}
+  .authcard .btn{font-size:15px;padding:12px 24px}
+  .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 10px;color:var(--muted);font-size:14px}
+  .spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--amber);border-radius:50%;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  @media (max-width:620px){
+    .grid2{grid-template-columns:1fr}
+    .brand h1{font-size:15px;white-space:nowrap}
+    .clock{display:none}
+    .chk-item .t{flex:1 1 100%}
+    .userbox .who{font-size:11px}
+    .userbox .ucode{display:none}
+    #inspect-form .btn{width:100%;justify-content:center}
+    header.top{padding:12px 14px}
+    .charts{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff;color:#000}
+    header.top,nav.tabs,.no-print,.footnote{display:none !important}
+    .panel{border:none;background:#fff;padding:0}
+    .qr-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+    .qr-card{border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
+    .wrap{padding:0;max-width:none}
+    .print-head{display:block !important;margin-bottom:14px}
+  }
+  .print-head{display:none;font-size:14px;font-weight:700;margin-bottom:10px}
+
+  /* ============ منوی کناری شیشه‌ای ============ */
+  .wrap{
+    display:grid;grid-template-columns:216px minmax(0,1fr);
+    grid-template-areas:"head head" "side main" "foot foot";
+    gap:16px 18px;align-items:start;max-width:1300px;
+  }
+  header.top{grid-area:head;width:100%;margin-bottom:0}
+  nav.tabs{grid-area:side}
+  main#app{grid-area:main;min-width:0}
+  .footnote{grid-area:foot}
+  .kpi.link{cursor:pointer;transition:transform .2s ease, box-shadow .25s ease, border-color .2s ease}
+  .kpi.link:hover{transform:translateY(-3px);border-color:rgba(245,165,36,.45);box-shadow:0 18px 38px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.22)}
+  .kpi.link:active{transform:translateY(-1px) scale(.995)}
+  .kpi.link:focus-visible{outline:2px solid rgba(245,165,36,.7);outline-offset:2px}
+  .wrap.no-sidebar{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "main" "foot"}
+
+  nav.tabs{
+    position:sticky;top:16px;display:flex;flex-direction:column;flex-wrap:nowrap;gap:6px;
+    margin-bottom:0;padding:12px 10px;border-radius:22px;overflow:hidden;isolation:isolate;z-index:20;
+    background:linear-gradient(165deg,rgba(255,255,255,.11),rgba(255,255,255,.028));
+    border:1px solid rgba(255,255,255,.17);
+    box-shadow:0 22px 50px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.24);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+  }
+  nav.tabs:before{
+    content:'';position:absolute;inset:-40% -60%;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(closest-side at 30% 20%, rgba(245,165,36,.38), transparent 70%),
+      radial-gradient(closest-side at 70% 80%, rgba(74,168,255,.30), transparent 70%);
+    background-size:190% 190%;
+    animation:sideGlow 15s ease-in-out infinite alternate;
+    opacity:.6;filter:blur(6px);
+  }
+  @keyframes sideGlow{from{background-position:0% 0%}to{background-position:100% 100%}}
+  nav.tabs .nav-title{
+    font-size:10.5px;letter-spacing:.6px;color:rgba(255,255,255,.45);
+    padding:2px 6px 8px;margin-bottom:2px;
+  }
+  nav.tabs button{
+    position:relative;width:100%;justify-content:flex-start;gap:10px;overflow:hidden;isolation:isolate;
+    padding:11px 13px;border-radius:14px;font-size:13.5px;font-weight:500;color:#c4d1e2;
+    background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);
+    transition:transform .22s cubic-bezier(.2,.9,.2,1), background .22s, border-color .22s, color .18s, box-shadow .25s;
+    animation:navIn .5s cubic-bezier(.2,.9,.2,1) both;
+  }
+  nav.tabs button .ic{font-size:16px;line-height:1;transition:transform .25s ease;filter:saturate(1.1)}
+  nav.tabs button .tx{white-space:nowrap}
+  nav.tabs button:nth-of-type(1){animation-delay:.02s}
+  nav.tabs button:nth-of-type(2){animation-delay:.07s}
+  nav.tabs button:nth-of-type(3){animation-delay:.12s}
+  nav.tabs button:nth-of-type(4){animation-delay:.17s}
+  nav.tabs button:nth-of-type(5){animation-delay:.22s}
+  nav.tabs button:nth-of-type(6){animation-delay:.27s}
+  nav.tabs button:nth-of-type(7){animation-delay:.32s}
+  nav.tabs button:nth-of-type(8){animation-delay:.37s}
+  @keyframes navIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+  nav.tabs button:before{
+    content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.20) 46%,transparent 72%);
+    transform:translateX(-130%);transition:transform .75s ease;
+  }
+  nav.tabs button:hover{
+    transform:translateX(-4px);color:#fff;background:rgba(255,255,255,.11);
+    border-color:rgba(255,255,255,.28);box-shadow:0 12px 26px rgba(0,0,0,.38);
+  }
+  nav.tabs button:hover:before{transform:translateX(130%)}
+  nav.tabs button:hover .ic{transform:scale(1.18) rotate(-7deg)}
+  nav.tabs button:active{transform:translateX(-1px) scale(.985)}
+  nav.tabs button.active{
+    color:#fff;border-color:rgba(245,165,36,.62);
+    background:linear-gradient(120deg,rgba(245,165,36,.32),rgba(245,165,36,.11) 62%,rgba(255,255,255,.05));
+    box-shadow:0 14px 32px rgba(245,165,36,.26), inset 0 1px 0 rgba(255,255,255,.36);
+  }
+  nav.tabs button.active:after{
+    content:'';position:absolute;inset-block:9px;inset-inline-start:0;width:3px;border-radius:3px;
+    background:linear-gradient(180deg,#ffe0a6,#f0a02a);
+    box-shadow:0 0 12px rgba(245,165,36,.85);animation:markIn .4s cubic-bezier(.2,.9,.2,1) both;
+  }
+  @keyframes markIn{from{opacity:0;transform:scaleY(.25)}to{opacity:1;transform:none}}
+  nav.tabs button.active .ic{filter:drop-shadow(0 0 7px rgba(255,198,110,.8))}
+
+  @media (max-width:980px){
+    .wrap{
+      grid-template-columns:1fr;grid-template-areas:"head" "side" "main" "foot";gap:14px;
+    }
+    nav.tabs{
+      position:sticky;top:8px;flex-direction:row;overflow-x:auto;overflow-y:hidden;align-items:center;
+      padding:8px;gap:6px;border-radius:18px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    }
+    nav.tabs::-webkit-scrollbar{display:none}
+    nav.tabs .nav-title{display:none}
+    nav.tabs button{width:auto;flex:0 0 auto;padding:9px 13px;font-size:12.5px;animation:none;white-space:nowrap}
+    nav.tabs button:hover{transform:none}
+    nav.tabs button.active:after{
+      inset:auto 12px 3px 12px;width:auto;height:3px;border-radius:3px;
+    }
+    nav.tabs button:before{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    nav.tabs button,nav.tabs button:before,nav.tabs button.active:after,nav.tabs:before{animation:none;transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo word" id="brand-logo">PERS</div>
+      <div>
+        <h1>گروه پرس — سامانه بازرسی تجهیزات</h1>
+        <p>گروه شرکت‌های پرس · تهران کانتینر ترمینال (TCT) · کشتیرانی کانتینر (Conship)</p>
+      </div>
+    </div>
+    <div class="userbox" id="userbox"></div>
+    <div class="clock" id="clock"></div>
+  </header>
+
+  <nav class="tabs no-print" id="tabs"></nav>
+
+  <main id="app"></main>
+
+  <p class="footnote">
+    همه بازرسی‌ها در یک دیتابیس مرکزی ذخیره می‌شوند؛ هر دستگاه (موبایل اپراتور یا کامپیوتر دفتر) پس از ورود، همان داده‌های مشترک را می‌بیند.
+  </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+/* =========================================================
+   رابط کاربری: داده‌ها از API مرکزی (D1) خوانده و ذخیره می‌شوند
+   ========================================================= */
+const DAY = 86400000;
+const CHECK_ITEMS_LABELS = [
+  'ترمز پا، ترمز دستی و عملکرد توقف',
+  'فرمان، بوق و سیستم هیدرولیک',
+  'نشتی روغن یا مایع هیدرولیک در زیر تجهیز',
+  'چراغ‌های هشدار، چراغ گردان و بوق دنده عقب',
+  'کمربند ایمنی، صندلی و حفاظ اپراتور',
+  'سطح روغن موتور / شارژ باتری (در تجهیز برقی)',
+  'لاستیک‌ها، چرخ‌ها و پیچ‌های محور',
+  'دوشاخه (فورک)، زنجیر بالابر و کشش زنجیر',
+  'دکل، ریل‌ها، غلطک‌ها و مهارهای جانبی',
+  'سیستم روشنایی، آینه‌ها و دید راننده',
+  'کپسول آتش‌نشانی و تجهیزات ایمنی همراه',
+  'برچسب ظرفیت مجاز و پلاک شناسایی تجهیز',
+  'کنتور ساعت‌کار و کارکرد سالم آن',
+  'نظافت عمومی، کابین و نبود اشیای شل'
+];
+// چک‌لیست فعال از دیتابیس می‌آید؛ این متغیر با هر بار بارگذاری داده به‌روز می‌شود.
+let CHECKLIST = CHECK_ITEMS_LABELS.slice();
+
+function scrollToEl(el){
+  try{
+    if(el && typeof el.scrollIntoView === 'function') el.scrollIntoView({behavior:'smooth', block:'center'});
+  }catch(e){}
+}
+
+function itemsOf(rec){
+  return (rec && Array.isArray(rec.items) && rec.items.length) ? rec.items : CHECK_ITEMS_LABELS;
+}
+
+const TYPES = {
+  forklift:     { label:'لیفتراک',    icon:'🚜' },
+  reachstacker: { label:'ریچ استاکر', icon:'🏗' },
+  transtainer:  { label:'ترانستینر',  icon:'🚢' }
+};
+const SHIFTS = ['صبح','عصر','شب'];
+
+/* ---------------- نقش‌ها ---------------- */
+const ROLES = {
+  manager:  { label:'مدیر',    cls:'b-ok' },
+  operator: { label:'اپراتور', cls:'b-info' }
+};
+
+const TABS = [
+  { view:'dashboard', label:'📊 داشبورد', managerOnly:true },
+  { view:'inspect',   label:'📝 بازرسی',   managerOnly:false },
+  { view:'equipment', label:'🧰 تجهیزات',  managerOnly:true },
+  { view:'history',   label:'🗂 تاریخچه',  managerOnly:true },
+  { view:'test',      label:'🧪 آزمون ارزیابی', managerOnly:false },
+  { view:'qr',        label:'📱 کد QR',    managerOnly:true },
+  { view:'settings',  label:'⚙️ تنظیمات',  managerOnly:true }
+];
+
+function isManager(){ return !!(USER && USER.role === 'manager'); }
+function roleInfo(role){ return ROLES[role] || { label:'بدون نقش', cls:'b-none' }; }
+function canSee(view){
+  if(!USER) return false;
+  if(isManager()) return true;
+  return view === 'inspect' || view === 'done' || view === 'test';
+}
+
+/* ---------------- state ---------------- */
+let DB = { equipment:[], inspections:[], users:[], online:[], guides:{}, checklist:[], tests:[], logins:[], test:{ questions:[], last:null, valid:false, minScore:60, validHours:12 } };
+
+let heartbeat = null;
+function startHeartbeat(){
+  if(heartbeat) return;
+  heartbeat = setInterval(()=>{
+    if(USER) api('/api/ping', { method:'POST' }).catch(()=>{});
+  }, 60000);
+}
+
+function jalaliNow(){
+  try{
+    const parts = new Intl.DateTimeFormat('en-u-ca-persian', { year:'numeric', month:'numeric' })
+      .formatToParts(new Date());
+    const pick = t => Number((parts.find(p=>p.type===t) || {}).value) || 0;
+    return { jy: pick('year'), jm: pick('month') };
+  }catch(e){
+    return { jy:0, jm:0 };
+  }
+}
+let USER = null;
+let BOOT = { status:'loading', error:'' };
+
+const state = { view:'dashboard', inspectEqId:null, q:'', eqQ:'', typeFilter:'', statusFilter:'', pendingEq:null, openRecord:null, lastResult:null, guideOk:{} };
+const STATUS_LABELS = { ok:'در مهلت', soon:'نزدیک سررسید', overdue:'عقب‌افتاده', none:'بدون بازرسی', fail:'نیازمند تعمیر' };
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const faDigit = s => String(s).replace(/[0-9]/g, d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+const jDate = iso => new Intl.DateTimeFormat('fa-IR',{year:'numeric',month:'long',day:'numeric'}).format(new Date(iso));
+const jTime = iso => new Intl.DateTimeFormat('fa-IR',{hour:'2-digit',minute:'2-digit'}).format(new Date(iso));
+const startOfDay = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
+
+const eqById = id => DB.equipment.find(e=>e.id===id);
+const eqByCode = code => DB.equipment.find(e=>String(e.code).toLowerCase()===String(code||'').toLowerCase());
+const lastInspection = eqId => DB.inspections.filter(i=>i.eqId===eqId).sort((a,b)=>b.at-a.at)[0] || null;
+const inspectionsOf = eqId => DB.inspections.filter(i=>i.eqId===eqId).sort((a,b)=>b.at-a.at);
+
+function dueDaysLeft(eq, last){
+  const period = Number(eq.period)||30;
+  return Math.round((startOfDay(last.at) + period*DAY - startOfDay(Date.now()))/DAY);
+}
+function dueDate(eq, last){
+  const period = Number(eq.period)||30;
+  return new Date(startOfDay(last.at) + period*DAY);
+}
+function statusOf(eq){
+  const last = lastInspection(eq.id);
+  if(!last) return { key:'none', label:'بدون بازرسی', cls:'b-none', last:null, daysLeft:null };
+  const dl = dueDaysLeft(eq, last);
+  if(last.result === 'fail') return { key:'fail', label:'نیازمند تعمیر', cls:'b-bad', last, daysLeft:dl };
+  if(dl < 0) return { key:'overdue', label:'عقب‌افتاده', cls:'b-bad', last, daysLeft:dl };
+  if(dl <= 3) return { key:'soon', label:'نزدیک سررسید', cls:'b-warn', last, daysLeft:dl };
+  return { key:'ok', label:'در مهلت', cls:'b-ok', last, daysLeft:dl };
+}
+
+/* ---------------- API ---------------- */
+async function api(path, options){
+  const opts = options || {};
+  const init = { method: opts.method || 'GET', credentials: 'same-origin', headers: {}, cache: 'no-store' };
+  if(opts.body !== undefined){
+    init.headers['content-type'] = 'application/json';
+    init.body = JSON.stringify(opts.body);
+  }
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  let timer = null;
+  if(ctrl){
+    init.signal = ctrl.signal;
+    timer = setTimeout(()=>{ try{ ctrl.abort(); }catch(e){} }, opts.timeout || 25000);
+  }
+  let res;
+  try{
+    res = await fetch(path, init);
+  }catch(e){
+    const aborted = ctrl && ctrl.signal && ctrl.signal.aborted;
+    const err = new Error(aborted
+      ? 'پاسخ سرور دیر شد. اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.'
+      : 'ارتباط با سرور برقرار نشد. اتصال اینترنت را بررسی کنید.');
+    err.network = true;
+    throw err;
+  }finally{
+    if(timer) clearTimeout(timer);
+  }
+  let data = null;
+  try{ data = await res.json(); }catch(e){}
+  if(res.status === 401){
+    USER = null;
+    BOOT = { status:'signedout', error:'' };
+    const err = new Error('نیاز به ورود مجدد');
+    err.unauthorized = true;
+    throw err;
+  }
+  if(!res.ok){
+    const err = new Error((data && data.error) || ('خطای سرور (' + res.status + ')'));
+    err.status = res.status;
+    err.code = data && data.code;
+    throw err;
+  }
+  return data;
+}
+
+async function bootstrap(){
+  try{
+    const jn = jalaliNow();
+    const d = await api('/api/bootstrap?jm=' + (jn.jm||0) + '&jy=' + (jn.jy||0));
+    USER = d.user || null;
+    DB = {
+      equipment: Array.isArray(d.equipment) ? d.equipment : [],
+      inspections: Array.isArray(d.inspections) ? d.inspections : [],
+      users: Array.isArray(d.users) ? d.users : [],
+      online: Array.isArray(d.online) ? d.online : [],
+      guides: d.guides && typeof d.guides === 'object' ? d.guides : {},
+      checklist: Array.isArray(d.checklist) ? d.checklist : []
+    };
+    DB.tests = Array.isArray(d.tests) ? d.tests : [];
+    DB.logins = Array.isArray(d.logins) ? d.logins : [];
+    DB.test = d.test || DB.test;
+    CHECKLIST = DB.checklist.length ? DB.checklist.map(c=>c.label) : CHECK_ITEMS_LABELS.slice();
+    startHeartbeat();
+    BOOT = {
+      status:'ready', error:'',
+      configured: !!d.sheetsConfigured,
+      logo: d.logo || '',
+      unsynced: Number(d.unsynced || 0)
+    };
+  }catch(e){
+    if(e.unauthorized){ /* view به صفحه ورود می‌رود */ }
+    else { BOOT = { status:'error', error: e.message || 'خطای نامشخص' }; }
+  }
+  render();
+}
+
+function settingsFormHtml(){
+  return `
+    <form id="settings-form" style="text-align:right">
+      <div class="field">
+        <label for="sheet-url">آدرس Web app اسکریپت</label>
+        <input type="url" id="sheet-url" name="url" placeholder="https://script.google.com/macros/s/.../exec" value="${esc(BOOT.sheetUrl||'')}">
+      </div>
+      <div class="field">
+        <label for="sheet-token">رمز اتصال (مقدار TOKEN در اسکریپت)</label>
+        <input type="text" id="sheet-token" name="token" placeholder="PERS-1405-...">
+      </div>
+      <div id="settings-msg"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" type="submit">ذخیره و تست اتصال</button>
+        ${BOOT.configured ? `<button class="btn" type="button" data-act="sheet-test">تست اتصال فعلی</button>
+        <button class="btn" type="button" data-act="sheet-sync">ارسال موارد ارسال‌نشده (${faDigit(BOOT.unsynced||0)})</button>` : ''}
+      </div>
+    </form>
+    <div id="settings-out" style="margin-top:12px"></div>`;
+}
+
+/* ---------------- router ---------------- */
+function show(view, eqId){
+  if(!canSee(view)) view = isManager() ? 'dashboard' : 'inspect';
+  state.view = view;
+  // فقط وقتی شناسه تجهیز صریحاً داده شود، انتخاب عوض می‌شود (null = بازگشت به فهرست)
+  if(view === 'inspect' && eqId !== undefined) state.inspectEqId = eqId || null;
+  document.querySelectorAll('nav.tabs button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view===view);
+  });
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function render(){
+  if(USER && BOOT.status === 'ready' && !canSee(state.view)){
+    state.view = isManager() ? 'dashboard' : 'inspect';
+  }
+  renderUserBox();
+  renderNav();
+  const logoBox = $('#brand-logo');
+  if(logoBox) logoBox.innerHTML = BOOT.logo ? `<img src="${esc(BOOT.logo)}" alt="لوگوی شرکت">` : 'PERS';
+  const app = $('#app');
+  if(BOOT.status === 'loading'){
+    app.innerHTML = `<div class="loading"><span class="spin"></span> در حال بارگذاری داده‌های مرکزی…</div>`;
+    return;
+  }
+  if(BOOT.status === 'setup'){ app.innerHTML = viewSetup(); return; }
+  if(BOOT.status === 'signedout'){ app.innerHTML = viewSignedOut(); return; }
+  if(BOOT.status === 'error'){ app.innerHTML = viewError(BOOT.error); return; }
+
+  if(state.view==='dashboard') app.innerHTML = viewDashboard();
+  else if(state.view==='inspect') app.innerHTML = viewInspect();
+  else if(state.view==='equipment') app.innerHTML = viewEquipment();
+  else if(state.view==='history') app.innerHTML = viewHistory();
+  else if(state.view==='qr') app.innerHTML = viewQR();
+  else if(state.view==='test') app.innerHTML = viewTest();
+  else if(state.view==='settings') app.innerHTML = viewSettings();
+  else if(state.view==='done') app.innerHTML = viewDone();
+
+  if(state.view==='qr') drawQRCodes();
+  if(state.view==='inspect'){ bindInspect(); bindGuide(); }
+}
+
+function renderNav(){
+  const nav = $('#tabs');
+  if(!nav) return;
+  const wrap = document.querySelector('.wrap');
+  const ready = !!USER && BOOT.status === 'ready';
+  if(wrap) wrap.classList.toggle('no-sidebar', !ready);
+  if(!ready){ nav.innerHTML = ''; nav.style.display = 'none'; return; }
+  nav.style.display = '';
+  nav.innerHTML = '<div class="nav-title">منوی اصلی</div>' + TABS
+    .filter(t=> !t.managerOnly || isManager())
+    .map(t=>{
+      const sp = t.label.indexOf(' ');
+      const icon = sp > 0 ? t.label.slice(0, sp) : '';
+      const title = sp > 0 ? t.label.slice(sp + 1) : t.label;
+      const active = state.view === t.view;
+      return `<button data-view="${t.view}" class="${active?'active':''}" aria-current="${active?'page':'false'}" title="${esc(title)}"><span class="ic" aria-hidden="true">${icon}</span><span class="tx">${esc(title)}</span></button>`;
+    })
+    .join('');
+}
+
+function renderUserBox(){
+  const box = $('#userbox');
+  if(!box) return;
+  if(!USER){ box.innerHTML = ''; return; }
+  const nm = USER.name || USER.code || 'کاربر';
+  const initial = esc(String(nm).trim().charAt(0) || '؟');
+  const role = roleInfo(USER.role);
+  box.innerHTML = `
+    <div class="avatar ph">${initial}</div>
+    <div class="who"><b>${esc(nm)}</b><span class="ucode">کد پرسنلی ${esc(USER.code||'—')}</span></div>
+    <span class="badge ${role.cls}">${role.label}</span>
+    <button class="btn sm ghost" data-act="logout">خروج</button>`;
+}
+
+/* ---------------- صفحه‌های وضعیت ---------------- */
+function viewSignedOut(){
+  return `
+  <div class="panel authcard">
+    <div class="big">🔐</div>
+    <h2>ورود به سامانه بازرسی گروه پرس</h2>
+    <p>کد پرسنلی و رمز عبور خود را وارد کنید. حساب‌ها توسط مدیر در گوگل‌شیت تعریف می‌شوند.</p>
+    <form id="login-form" style="text-align:right" novalidate>
+      <div class="field">
+        <label for="personnel-code">کد پرسنلی</label>
+        <input type="text" id="personnel-code" name="code" autocomplete="username" placeholder="مثلاً 1024" required>
+      </div>
+      <div class="field">
+        <label for="personnel-password">رمز عبور</label>
+        <input type="password" id="personnel-password" name="password" autocomplete="current-password" required>
+      </div>
+      <div id="login-msg"></div>
+      <button class="btn primary" type="submit" style="width:100%;justify-content:center">ورود</button>
+    </form>
+    <p style="margin-top:18px;font-size:12px">اگر کد QR یک تجهیز را اسکن کرده‌اید، پس از ورود مستقیم به فرم بازرسی همان تجهیز می‌روید.</p>
+  </div>`;
+}
+
+function viewSetup(){
+  return `
+  <div class="panel authcard" style="max-width:660px">
+    <div class="big">🔗</div>
+    <h2>اتصال سامانه به گوگل‌شیت</h2>
+    <p>برای فعال شدن ورود با کد پرسنلی، ابتدا سامانه را به شیت شرکت وصل کنید.</p>
+    <ol style="text-align:right;font-size:13px;color:var(--muted);line-height:2;padding-inline-start:20px;margin:0 0 16px">
+      <li>شیت را باز کنید ← «افزونه‌ها» ← «Apps Script»</li>
+      <li>متن فایل <b>apps-script-sheets.gs</b> را آنجا جای‌گذاری، ذخیره و مقدار <b>TOKEN</b> را عوض کنید</li>
+      <li>Deploy ← New deployment ← Web app ← Execute as: Me، Who has access: Anyone</li>
+      <li>آدرس .../exec و همان TOKEN را پایین وارد کنید</li>
+    </ol>
+    ${settingsFormHtml()}
+  </div>`;
+}
+
+function viewSettings(){
+  return `
+  <div class="panel">
+    <h2>🖼 لوگوی شرکت <span class="sub">${BOOT.logo ? 'بارگذاری شده' : 'بارگذاری نشده'}</span></h2>
+    <p class="hint">این تصویر در سربرگ همه صفحات نمایش داده می‌شود. PNG با پس‌زمینه شفاف بهتر است (کمتر از ۲۰۰ کیلوبایت).</p>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input type="file" id="logo-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" style="max-width:260px">
+      <button class="btn primary" type="button" data-act="save-logo">ذخیره لوگو</button>
+      ${BOOT.logo ? `<button class="btn ghost" type="button" data-act="del-logo">حذف لوگو</button>` : ''}
+    </div>
+    <div id="logo-msg" style="margin-top:10px"></div>
+  </div>
+
+  <div class="panel">
+    <h2>⚙️ اتصال به گوگل‌شیت <span class="sub">${BOOT.configured ? 'متصل' : 'تنظیم نشده'}</span></h2>
+    <p class="hint">کاربران از برگه «کاربران» شیت خوانده می‌شوند و هر بازرسی در برگه «بازرسی‌ها» ثبت می‌شود. کاربران و رمزها را مستقیم در شیت مدیریت کنید؛ رمزها می‌توانند متنی یا هش‌شده (با منوی «هش کردن رمزهای عبور» در شیت) باشند.</p>
+    ${settingsFormHtml()}
+  </div>`;
+}
+
+function viewError(msg){
+  return `
+  <div class="panel authcard">
+    <div class="big">⚠️</div>
+    <h2>مشکلی پیش آمد</h2>
+    <p>${esc(msg)}</p>
+    <button class="btn primary" data-act="reload">تلاش دوباره</button>
+  </div>`;
+}
+
+/* =========================================================
+   داشبورد
+   ========================================================= */
+function viewDashboard(){
+  const eqs = DB.equipment.filter(e=>e.active!==false);
+  const rows = eqs.map(e=>({ e, st: statusOf(e) }));
+  const count = k => rows.filter(r=>r.st.key===k).length;
+  const today = startOfDay(Date.now());
+  const todayCount = DB.inspections.filter(i=>startOfDay(i.at)===today).length;
+
+  const q = state.q.trim().toLowerCase();
+  const filtered = rows.filter(r => !q ||
+    ((r.e.code||'')+' '+(r.e.name||'')+' '+(r.e.site||'')+' '+(r.e.model||'')).toLowerCase().includes(q));
+
+  const alerts = rows.filter(r=>['overdue','fail','none','soon'].includes(r.st.key))
+    .sort((a,b)=>{ const rank={fail:0,none:1,overdue:2,soon:3}; return rank[a.st.key]-rank[b.st.key]; });
+
+  const alertHtml = alerts.length ? `
+    <div class="panel">
+      <h2>⚠️ نیازمند توجه <span class="sub">${faDigit(alerts.length)} مورد</span></h2>
+      <div class="scroll"><table>
+        <thead><tr><th>تجهیز</th><th>محل</th><th>آخرین بازرسی</th><th>سررسید بعدی</th><th>وضعیت</th><th></th></tr></thead>
+        <tbody>${alerts.map(({e,st})=>`
+          <tr>
+            <td><div class="eq-name">${esc(e.name)}</div><div class="eq-sub code">${esc(e.code)}</div></td>
+            <td>${esc(e.site||'—')}</td>
+            <td>${st.last ? jDate(st.last.at) : '<span style="color:var(--muted)">ثبت نشده</span>'}</td>
+            <td>${st.last ? (st.daysLeft>=0 ? jDate(dueDate(e,st.last)) : `<span style="color:#ff8b88">${faDigit(Math.abs(st.daysLeft))} روز گذشته</span>`) : '—'}</td>
+            <td><span class="badge ${st.cls}">${st.label}</span></td>
+            <td><button class="btn sm primary" data-act="go-inspect" data-code="${esc(e.code)}">بازرسی</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>` : `<div class="panel"><div class="notice good">✅ همه تجهیزات در مهلت بازرسی هستند و ایراد باز باقی نمانده است.</div></div>`;
+
+  return `
+  <div class="no-print" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+    <button class="btn" data-act="print">🖨 چاپ گزارش ناظر</button>
+    <span class="eq-sub">گزارش شامل نمودارها، عملکرد اپراتورها، آزمون‌ها و تجهیزات عقب‌افتاده</span>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi amber link" data-act="kpi-go" data-view="equipment" role="link" tabindex="0" title="نمایش همه‌ی تجهیزات"><div class="n">${faDigit(eqs.length)}</div><div class="l">تجهیز فعال</div></div>
+    <div class="kpi ok link" data-act="kpi-go" data-view="equipment" data-status="ok" role="link" tabindex="0" title="نمایش تجهیزات در مهلت"><div class="n">${faDigit(count('ok'))}</div><div class="l">در مهلت</div></div>
+    <div class="kpi warn link" data-act="kpi-go" data-view="equipment" data-status="soon" role="link" tabindex="0" title="نمایش تجهیزات نزدیک سررسید"><div class="n">${faDigit(count('soon'))}</div><div class="l">نزدیک سررسید</div></div>
+    <div class="kpi bad link" data-act="kpi-go" data-view="equipment" data-status="overdue,none" role="link" tabindex="0" title="نمایش تجهیزات عقب‌افتاده و بدون بازرسی"><div class="n">${faDigit(count('overdue')+count('none'))}</div><div class="l">عقب‌افتاده / بدون بازرسی</div></div>
+    <div class="kpi bad link" data-act="kpi-go" data-view="equipment" data-status="fail" role="link" tabindex="0" title="نمایش تجهیزات نیازمند تعمیر"><div class="n">${faDigit(count('fail'))}</div><div class="l">نیازمند تعمیر</div></div>
+    <div class="kpi link" data-act="kpi-go" data-view="history" role="link" tabindex="0" title="رفتن به تاریخچه بازرسی‌ها"><div class="n">${faDigit(todayCount)}</div><div class="l">بازرسی امروز</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-box">
+      <div class="chart-title">📈 روند بازرسی‌ها در ۶ ماه گذشته</div>
+      ${trendChart()}
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">🔧 پرتکرارترین ایرادها</div>
+      ${defectsChart()}
+    </div>
+  </div>
+
+  ${managerTables()}
+
+  ${onlinePanel()}
+
+  ${loginPanel()}
+
+  ${usersPanel()}
+
+  ${alertHtml}
+
+  <div class="panel">
+    <h2>🧾 وضعیت بازرسی تجهیزات
+      <span class="sub"><input type="search" class="search" id="search" placeholder="جستجوی کد، نام یا محل…" value="${esc(state.q)}"></span>
+    </h2>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>تجهیز</th><th>نوع</th><th>محل</th><th>دوره بازرسی</th>
+          <th>آخرین بازرسی</th><th>اپراتور</th><th>بازرسی بعدی</th><th>وضعیت</th><th>عملیات</th>
+        </tr></thead>
+        <tbody>
+        ${filtered.length ? filtered.map(({e,st})=>{
+          const dl = st.daysLeft;
+          return `<tr>
+            <td><div class="eq-name">${esc(e.name)}</div><div class="eq-sub code">${esc(e.code)} · ${esc(e.model||'')}</div></td>
+            <td>${TYPES[e.type]?.icon||''} ${TYPES[e.type]?.label||esc(e.type)}</td>
+            <td>${esc(e.site||'—')}</td>
+            <td>${faDigit(e.period)} روز</td>
+            <td>${st.last ? jDate(st.last.at)+' <span class="eq-sub">('+faDigit(Math.round((startOfDay(Date.now())-startOfDay(st.last.at))/DAY))+' روز پیش)</span>' : '<span style="color:var(--muted)">ثبت نشده</span>'}</td>
+            <td>${st.last ? esc(st.last.operator) : '—'}</td>
+            <td>${st.last ? (dl>=0 ? jDate(dueDate(e,st.last)) : `<span style="color:#ff8b88">${faDigit(Math.abs(dl))} روز تأخیر</span>`) : '—'}</td>
+            <td><span class="badge ${st.cls}">${st.label}</span></td>
+            <td><div class="row-actions">
+              <button class="btn sm primary" data-act="go-inspect" data-code="${esc(e.code)}">بازرسی</button>
+              <button class="btn sm ghost" data-act="go-qr" data-code="${esc(e.code)}">QR</button>
+            </div></td>
+          </tr>`;
+        }).join('') : `<tr><td colspan="9"><div class="empty">تجهیزی با این جستجو پیدا نشد.</div></td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ---------------- نمودارها و گزارش ناظر ---------------- */
+function trendChart(){
+  const now = new Date();
+  const months = [];
+  for(let k=5;k>=0;k--){
+    const d = new Date(now.getFullYear(), now.getMonth()-k, 1);
+    months.push({
+      y:d.getFullYear(), m:d.getMonth(),
+      label:new Intl.DateTimeFormat('fa-IR',{month:'long'}).format(d),
+      n:0
+    });
+  }
+  DB.inspections.forEach(r=>{
+    const d = new Date(r.at);
+    const hit = months.find(x=>x.y===d.getFullYear() && x.m===d.getMonth());
+    if(hit) hit.n++;
+  });
+  const max = Math.max(1, ...months.map(m=>m.n));
+  const w = 640, h = 190, pad = 24, bw = (w - pad*2) / months.length;
+  const bars = months.map((m,i)=>{
+    const bh = (m.n / max) * (h - 66);
+    const x = pad + i*bw + bw*0.2;
+    const y = h - 34 - bh;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*0.6).toFixed(1)}" height="${Math.max(3,bh).toFixed(1)}" rx="6" fill="url(#gradBar)"></rect>
+      <text x="${(x+bw*0.3).toFixed(1)}" y="${(y-8).toFixed(1)}" text-anchor="middle" font-size="11" fill="#dfe7f2">${faDigit(m.n)}</text>
+      <text x="${(x+bw*0.3).toFixed(1)}" y="${h-12}" text-anchor="middle" font-size="11" fill="#93a3ba">${esc(m.label)}</text>`;
+  }).join('');
+  return `<div class="chart-box" style="background:transparent;border:none;padding:0">
+    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+      <defs><linearGradient id="gradBar" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffc251"/><stop offset="1" stop-color="#e89412"/>
+      </linearGradient></defs>
+      ${bars}
+    </svg></div>`;
+}
+
+function defectsChart(){
+  const counts = new Map();
+  DB.inspections.forEach(r=>{
+    const labels = itemsOf(r);
+    (r.fails||[]).forEach(i=>{
+      const l = labels[i];
+      if(l) counts.set(l, (counts.get(l)||0)+1);
+    });
+  });
+  const top = [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,7);
+  if(!top.length) return `<div class="empty" style="padding:24px 6px">هنوز ایرادی ثبت نشده است.</div>`;
+  const max = top[0][1];
+  return `<div style="display:flex;flex-direction:column;gap:9px">
+    ${top.map(([label,n])=>`
+      <div>
+        <div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px">
+          <span>${esc(label)}</span><span style="color:#ffd08a;font-weight:700">${faDigit(n)}</span>
+        </div>
+        <div style="height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:4px">
+          <div style="height:100%;width:${Math.round(n/max*100)}%;background:linear-gradient(90deg,#ffc251,#e89412);border-radius:999px"></div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function onlinePanel(){
+  const list = DB.online || [];
+  return `<div class="panel">
+    <h2>🟢 کاربران آنلاین <span class="sub">${faDigit(list.length)} نفر · ۵ دقیقه اخیر</span></h2>
+    ${list.length ? `<div class="scroll"><table style="min-width:520px">
+      <thead><tr><th>کاربر</th><th>کد پرسنلی</th><th>نقش</th><th>آخرین فعالیت</th><th></th></tr></thead>
+      <tbody>${list.map(u=>{
+        const r = roleInfo(u.role);
+        const mins = Math.max(0, Math.round((Date.now()-u.lastSeen)/60000));
+        return `<tr>
+          <td>${esc(u.name||'—')}</td>
+          <td class="code">${esc(u.code)}</td>
+          <td><span class="badge ${r.cls}">${r.label}</span></td>
+          <td>${mins < 1 ? '<span class="badge b-ok">همین حالا</span>' : faDigit(mins)+' دقیقه پیش'}</td>
+          <td><button class="btn sm ghost" data-act="del-visit" data-code="${esc(u.code)}" title="حذف سابقهی ورود و حضور">🗑</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>` : `<div class="empty">در ۵ دقیقه اخیر کسی صفحه را باز نکرده است.</div>`}
+  </div>`;
+}
+
+function loginPanel(){
+  const list = DB.logins || [];
+  if(!list.length){
+    return `<div class="panel"><h2>👁 بازدیدهای اخیر</h2><div class="empty">هنوز ورودی ثبت نشده است.</div></div>`;
+  }
+  const today = startOfDay(Date.now());
+  const inspBy = new Map();
+  DB.inspections.forEach(r=>{
+    const k = r.userCode || '';
+    inspBy.set(k, (inspBy.get(k)||0)+1);
+  });
+  const byUser = new Map();
+  list.forEach(l=>{
+    const cur = byUser.get(l.code) || { code:l.code, name:l.name, last:0, today:0 };
+    cur.last = Math.max(cur.last, l.at);
+    if(startOfDay(l.at) === today) cur.today++;
+    byUser.set(l.code, cur);
+  });
+  const rows = [...byUser.values()].sort((a,b)=>b.last-a.last);
+  return `<div class="panel">
+    <h2>👁 بازدیدهای اخیر <span class="sub">${faDigit(rows.length)} کاربر · ${faDigit(list.length)} ورود اخیر</span></h2>
+    <p class="hint">هر کسی وارد شود — حتی اگر بازرسی ثبت نکند — در این فهرست می‌آید.</p>
+    <div class="scroll"><table style="min-width:680px">
+      <thead><tr><th>کاربر</th><th>کد پرسنلی</th><th>آخرین ورود</th><th>ورود امروز</th><th>بازرسی‌های ثبت‌شده</th><th></th></tr></thead>
+      <tbody>${rows.map(u=>{
+        const n = inspBy.get(u.code) || 0;
+        return `<tr>
+          <td>${esc(u.name||'—')}</td>
+          <td class="code">${esc(u.code)}</td>
+          <td>${jDate(u.last)} <span class="eq-sub">${jTime(u.last)}</span></td>
+          <td>${faDigit(u.today)}</td>
+          <td>${n ? faDigit(n) : '<span class="badge b-warn">فقط بازدید</span>'}</td>
+          <td><button class="btn sm ghost" data-act="del-visit" data-code="${esc(u.code)}" title="حذف سابقه‌ی ورود و حضور">🗑</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
+  </div>`;
+}
+
+function usersPanel(){
+  const list = DB.users || [];
+  const insideTeam = code => (DB.logins||[]).find(l=>l.code===code);
+  const inspCount = code => DB.inspections.filter(r=>r.userCode===code).length;
+  return `<div class="panel">
+    <h2>👥 مدیریت کاربران <span class="sub">${faDigit(list.length)} کاربر در شیت</span></h2>
+    <p class="hint">کاربران از برگه «کاربران» گوگل‌شیت خوانده می‌شوند. افزودن کاربر، تغییر نقش، فعال/غیرفعال کردن و ریست رمز از همین‌جا روی شیت اعمال می‌شود.</p>
+    <form id="user-form" style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));align-items:end;margin-bottom:14px">
+      <div class="field" style="margin:0"><label for="nu-code">کد پرسنلی</label><input type="text" id="nu-code" required></div>
+      <div class="field" style="margin:0"><label for="nu-name">نام</label><input type="text" id="nu-name" required></div>
+      <div class="field" style="margin:0"><label for="nu-pass">رمز اولیه</label><input type="text" id="nu-pass" required></div>
+      <div class="field" style="margin:0"><label for="nu-role">نقش</label><select id="nu-role"><option value="operator">اپراتور</option><option value="manager">مدیر</option></select></div>
+      <button class="btn primary" type="submit">افزودن کاربر</button>
+    </form>
+    <div id="user-msg"></div>
+    <div class="scroll"><table style="min-width:780px">
+      <thead><tr><th>نام</th><th>کد</th><th>نقش</th><th>وضعیت</th><th>بازرسی</th><th>آخرین ورود</th><th>اقدام‌ها</th></tr></thead>
+      <tbody>${list.length ? list.map(u=>{
+        const r = roleInfo(u.role);
+        const l = insideTeam(u.code);
+        return `<tr>
+          <td>${esc(u.name||'—')}</td>
+          <td class="code">${esc(u.code)}</td>
+          <td><span class="badge ${r.cls}">${r.label}</span></td>
+          <td>${u.active ? '<span class="badge b-ok">فعال</span>' : '<span class="badge b-bad">غیرفعال</span>'}</td>
+          <td>${faDigit(inspCount(u.code))}</td>
+          <td class="eq-sub">${l ? jDate(l.at)+' '+jTime(l.at) : '—'}</td>
+          <td><div class="row-actions">
+            <button class="btn sm ghost" data-act="toggle-role" data-code="${esc(u.code)}" data-role="${u.role==='manager'?'operator':'manager'}">${u.role==='manager'?'اپراتور شود':'مدیر شود'}</button>
+            <button class="btn sm ghost" data-act="toggle-active" data-code="${esc(u.code)}" data-active="${u.active?'0':'1'}">${u.active?'غیرفعال':'فعال'} کن</button>
+            <button class="btn sm ghost" data-act="reset-pass" data-code="${esc(u.code)}">ریست رمز</button>
+          </div></td>
+        </tr>`;
+      }).join('') : `<tr><td colspan="7"><div class="empty">کاربری خوانده نشد؛ اتصال شیت را در تنظیمات بررسی کنید.</div></td></tr>`}</tbody>
+    </table></div>
+  </div>`;
+}
+
+function managerTables(){
+  const ops = new Map();
+  DB.inspections.forEach(r=>{
+    const key = r.operator || '—';
+    const cur = ops.get(key) || { name:key, n:0, fails:0, last:0 };
+    cur.n++; if(r.result==='fail') cur.fails++; cur.last = Math.max(cur.last, r.at);
+    ops.set(key, cur);
+  });
+  const testByCode = new Map();
+  (DB.tests||[]).forEach(t=>{ if(!testByCode.has(t.userCode)) testByCode.set(t.userCode, t); });
+  const rows = [...ops.values()].sort((a,b)=>b.n-a.n);
+
+  const opsTable = rows.length ? `<div class="scroll"><table style="min-width:620px">
+    <thead><tr><th>اپراتور</th><th>تعداد بازرسی</th><th>نرخ سالم</th><th>آخرین بازرسی</th><th></th></tr></thead>
+    <tbody>${rows.map(o=>`<tr>
+      <td>${esc(o.name)}</td>
+      <td>${faDigit(o.n)}</td>
+      <td>${faDigit(Math.round((o.n-o.fails)/o.n*100))}٪</td>
+      <td>${jDate(o.last)}</td>
+      <td><button class="btn sm ghost" data-act="del-op" data-name="${esc(o.name)}" title="حذف همه‌ی بازرسی‌های این اپراتور">🗑 حذف</button></td>
+    </tr>`).join('')}</tbody>
+  </table></div>` : `<div class="empty">هنوز بازرسی‌ای ثبت نشده است.</div>`;
+
+  const tests = (DB.tests||[]).slice(0,10);
+  const testTable = tests.length ? `<div class="scroll"><table style="min-width:560px">
+    <thead><tr><th>نام</th><th>تاریخ</th><th>نمره</th><th>نتیجه</th><th>تخصصی</th><th>ایمنی</th><th>رفتاری</th><th></th></tr></thead>
+    <tbody>${tests.map(t=>{
+      const c = t.cats || {};
+      const pct = k => (c[k] && c[k][1]) ? faDigit(c[k][0]) + '/' + faDigit(c[k][1]) : '—';
+      const cls = t.band==='قبول' ? 'b-ok' : t.band==='مشروط' ? 'b-warn' : 'b-bad';
+      return `<tr>
+        <td>${esc(t.userName||t.userCode)}</td>
+        <td>${jDate(t.at)}</td>
+        <td style="color:#ffd08a;font-weight:700">${faDigit(t.score)}٪</td>
+        <td><span class="badge ${cls}">${esc(t.band)}</span></td>
+        <td class="eq-sub">${pct('technical')}</td>
+        <td class="eq-sub">${pct('safety')}</td>
+        <td class="eq-sub">${pct('psych')}</td>
+        <td><button class="btn sm ghost" data-act="del-test" data-id="${esc(t.id)}" title="حذف این نتیجه آزمون">🗑</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>` : `<div class="empty">هنوز آزمونی ثبت نشده است.</div>`;
+
+  return `
+  <div class="charts" style="grid-template-columns:1fr 1fr">
+    <div class="panel" style="margin:0">
+      <h2>👷 عملکرد اپراتورها <span class="sub">${faDigit(rows.length)} نفر</span></h2>
+      ${opsTable}
+    </div>
+    <div class="panel" style="margin:0">
+      <h2>🧪 نتیجه آزمون‌های ارزیابی <span class="sub">${faDigit((DB.tests||[]).length)} آزمون</span></h2>
+      ${testTable}
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   آزمون ارزیابی اپراتور
+   ========================================================= */
+function viewTest(){
+  const t = DB.test || {};
+  const qs = t.questions || [];
+  const last = t.last;
+  const res = state.testResult;
+
+  const head = `
+    <div class="panel">
+      <h2>🧪 آزمون ارزیابی اپراتور <span class="sub">۱۵ سوال · حد قبولی ${faDigit(t.minScore||60)}٪</span></h2>
+      <p class="hint">این آزمون شامل سوالات تخصصی، ایمنی و عمومی، و رفتاری است. برای ثبت بازرسی، باید نمره‌ی حداقل ${faDigit(t.minScore||60)}٪ را بگیرید. اعتبار نتیجه ${faDigit(t.validHours||12)} ساعت است.</p>
+      ${last
+        ? `<div class="notice ${t.valid?'good':'warn'}">آخرین آزمون شما: ${jDate(last.at)} ساعت ${jTime(last.at)} — نمره ${faDigit(last.score)}٪ (${esc(last.band)}). ${t.valid?'نتیجه معتبر است.':'نتیجه معتبر نیست؛ آزمون را دوباره بدهید.'}</div>`
+        : `<div class="notice warn">هنوز آزمونی ثبت نکرده‌اید.</div>`}
+      ${state.pendingEq ? `<div class="notice good" style="margin-top:10px">دستگاه <b>${esc((eqById(state.pendingEq)||{}).code||'')}</b> اسکن شد؛ پس از قبولی در آزمون، مستقیم به فرم بازرسی همان دستگاه می‌روید.</div>` : ''}
+      ${res ? `<div class="notice ${res.score>= (t.minScore||60)?'good':'warn'}" style="margin-top:10px">
+        نتیجهٔ همین آزمون: ${faDigit(res.correct)} پاسخ درست از ${faDigit(res.total)} — نمره ${faDigit(res.score)}٪ (${esc(res.band)})
+      </div>` : ''}
+    </div>`;
+
+  if(!qs.length){
+    return head + `<div class="panel"><div class="empty">سوالات آزمون در دسترس نیست.</div></div>`;
+  }
+
+  return head + `
+    <div class="panel">
+      <h2>📋 پاسخگویی به سوالات <span class="sub">۱۵ سوال</span></h2>
+      <form id="test-form">
+        ${qs.map((q,i)=>`
+          <div class="test-q">
+            <div class="qt"><span class="cat">${esc(q.catLabel||'')}</span>${faDigit(i+1)}. ${esc(q.text)}</div>
+            ${q.options.map((o,j)=>`<label class="opt"><input type="radio" name="q_${i}" value="${j}"><span>${esc(o)}</span></label>`).join('')}
+          </div>`).join('')}
+        <div id="test-msg"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn primary" type="submit">ثبت پاسخ‌ها و مشاهده نتیجه</button>
+          <button class="btn" type="button" data-act="to-inspect">رفتن به بازرسی</button>
+        </div>
+      </form>
+    </div>`;
+}
+
+/* =========================================================
+   فرم بازرسی
+   ========================================================= */
+function viewInspect(){
+  const all = DB.equipment.filter(e=>e.active!==false);
+  if(!all.length){
+    return `<div class="panel"><div class="empty">هنوز تجهیزی ثبت نشده است. ابتدا از بخش «تجهیزات» تجهیز اضافه کنید.</div></div>`;
+  }
+  const eq = state.inspectEqId ? eqById(state.inspectEqId) : null;
+
+  if(!eq){
+    const q = (state.eqQ || '').trim().toLowerCase();
+    const tf = state.typeFilter || '';
+    const shown = all.filter(e => (!tf || e.type === tf) && (!q ||
+      ((e.code||'') + ' ' + (e.name||'') + ' ' + (e.site||'')).toLowerCase().includes(q)));
+    const typeChips = ['transtainer','reachstacker','forklift']
+      .filter(t=>all.some(e=>e.type===t))
+      .map(t=>`<button class="btn sm ${tf===t?'primary':''}" data-act="filter-eq" data-type="${t}">${TYPES[t].icon} ${TYPES[t].label}</button>`)
+      .join('');
+    const counts = ['transtainer','reachstacker','forklift']
+      .map(t=>({ t, n: all.filter(e=>e.type===t).length }))
+      .filter(x=>x.n>0)
+      .map(x=>`${faDigit(x.n)} ${TYPES[x.t] ? TYPES[x.t].label : x.t}`)
+      .join(' · ');
+    return `
+    <div class="panel">
+      <h2>📝 شروع بازرسی <span class="sub">${counts}</span></h2>
+      <p class="hint">تجهیز را جستجو و انتخاب کنید، یا کد QR روی بدنه دستگاه را اسکن کنید تا فرم خودکار باز شود.</p>
+      <input type="search" id="eq-filter" class="search" style="max-width:none;margin-bottom:10px" placeholder="جستجوی کد یا نام تجهیز…" value="${esc(state.eqQ||'')}">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+        <button class="btn sm ${tf?'':'primary'}" data-act="filter-eq" data-type="">همه دستگاه‌ها</button>
+        ${typeChips}
+      </div>
+      <div class="grid3">
+        ${shown.length ? shown.map(e=>{
+          const st = statusOf(e);
+          return `<div class="chk-item" style="flex-direction:column;align-items:stretch;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:22px">${TYPES[e.type]?.icon||'🔧'}</span>
+              <div style="flex:1">
+                <div class="eq-name">${esc(e.name)}</div>
+                <div class="eq-sub code">${esc(e.code)} · ${esc(e.site||'')}</div>
+              </div>
+              <span class="badge ${st.cls}">${st.label}</span>
+            </div>
+            <button class="btn primary" data-act="pick-eq" data-id="${esc(e.id)}">شروع بازرسی</button>
+          </div>`;
+        }).join('') : `<div class="empty">تجهیزی با این مشخصات پیدا نشد.</div>`}
+      </div>
+    </div>`;
+  }
+
+  const guideText = eqGuide(eq);
+  if(guideText && !state.guideOk[eq.id]){
+    return `
+  <div class="panel">
+    <h2>📘 آموزش پیش از بازرسی <span class="sub">${TYPES[eq.type]?.icon||''} ${esc(eq.name)}</span></h2>
+    <p class="hint">پیش از بازرسی این دستگاه، آموزش زیر را بخوانید. سپس بازرسی را شروع کنید.</p>
+    <div class="glass-box" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+      <div style="flex:1;min-width:200px">
+        <div class="eq-name" style="font-size:15px">${esc(eq.name)}</div>
+        <div class="eq-sub">کد <span class="code">${esc(eq.code)}</span> · ${esc(eq.model||'')} · ${esc(eq.site||'')}</div>
+      </div>
+      <button class="btn ghost sm" data-act="cancel-inspect" type="button">تغییر تجهیز</button>
+    </div>
+    <div class="glass-box" style="white-space:pre-wrap;line-height:2;font-size:13.5px">${esc(guideText)}</div>
+    <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-top:16px;font-size:13.5px">
+      <input type="checkbox" id="guide-check" style="width:18px;height:18px">
+      <span>آموزش و تجهیزات موردنیاز این دستگاه را خواندم.</span>
+    </label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn primary" id="guide-go" data-act="guide-ok" data-id="${esc(eq.id)}" disabled>شروع بازرسی این دستگاه</button>
+      <button class="btn ghost" data-act="cancel-inspect">انصراف</button>
+    </div>
+  </div>`;
+  }
+
+  const last = lastInspection(eq.id);
+  const needTest = !isManager() && !(DB.test && DB.test.valid);
+  const hist = DB.inspections.filter(r=>r.eqId===eq.id).slice(0,6);
+  return `
+  <div class="panel">
+    <h2>📝 چک‌لیست بازرسی اپراتوری
+      <span class="sub">${TYPES[eq.type]?.icon||''} ${esc(TYPES[eq.type]?.label||'')}</span>
+    </h2>
+    <div class="glass-box" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div class="eq-name" style="font-size:15px">${esc(eq.name)}</div>
+        <div class="eq-sub">کد <span class="code">${esc(eq.code)}</span> · ${esc(eq.model||'')} · ${esc(eq.capacity||'')} · ${esc(eq.site||'')}</div>
+      </div>
+      <div class="eq-sub">آخرین بازرسی: ${last ? jDate(last.at)+' — '+esc(last.operator) : 'ثبت نشده'}</div>
+      <button class="btn ghost sm no-print" data-act="cancel-inspect" type="button">تغییر تجهیز</button>
+    </div>
+
+    ${guideText ? `<details class="glass-box" style="margin-bottom:14px"><summary style="cursor:pointer;font-size:13.5px">📘 نمایش دوباره آموزش این تجهیز</summary><div style="white-space:pre-wrap;line-height:2;font-size:13px;margin-top:10px">${esc(guideText)}</div></details>` : ''}
+
+    ${needTest ? `<div class="notice warn" style="margin-bottom:16px">برای ثبت بازرسی، ابتدا آزمون ارزیابی ۱۵ سوالی را با موفقیت انجام دهید. <button class="btn sm" data-act="to-test" style="margin-inline-start:8px">رفتن به آزمون</button></div>` : ''}
+
+    <div class="glass-box">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <b style="font-size:13.5px">🗃 سابقه بازرسی این دستگاه</b>
+        <span class="eq-sub">${hist.length ? 'شامل بازرسی ماه قبل' : 'ثبت نشده'}</span>
+      </div>
+      ${hist.length ? `<div class="scroll"><table style="min-width:520px">
+        <thead><tr><th>تاریخ</th><th>نتیجه</th><th>اپراتور</th><th>موارد ایراد</th></tr></thead>
+        <tbody>${hist.map(r=>{
+          const labels = itemsOf(r);
+          return `<tr>
+            <td>${jDate(r.at)}<div class="eq-sub">${jTime(r.at)} · ${faDigit(Math.max(0,Math.round((startOfDay(Date.now())-startOfDay(r.at))/DAY)))} روز پیش</div></td>
+            <td><span class="badge ${r.result==='pass'?'b-ok':'b-bad'}">${r.result==='pass'?'سالم':'نیازمند تعمیر'}</span></td>
+            <td>${esc(r.operator)}</td>
+            <td>${(r.fails||[]).length ? `<ul class="detail-list">${(r.fails||[]).map(i=>`<li>${esc(labels[i]||'')}</li>`).join('')}</ul>` : '<span class="eq-sub">—</span>'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>` : `<div class="empty" style="padding:18px 6px">برای این دستگاه هنوز بازرسی ثبت نشده است؛ شما اولین نفر باشید.</div>`}
+    </div>
+
+    <form id="inspect-form" novalidate>
+      <div class="grid3">
+        <div class="field">
+          <label for="operator">نام اپراتور *</label>
+          <input type="text" id="operator" name="operator" placeholder="نام و نام خانوادگی" required value="${esc((USER && USER.name) || '')}">
+        </div>
+        <div class="field">
+          <label for="shift">شیفت</label>
+          <select id="shift" name="shift">${SHIFTS.map(s=>`<option>${s}</option>`).join('')}</select>
+        </div>
+        <div class="field">
+          <label for="hours">کنتور ساعت‌کار</label>
+          <input type="number" id="hours" name="hours" placeholder="مثلاً 2140" min="0" step="1">
+        </div>
+      </div>
+
+      <div class="chk" id="chk">
+        ${CHECKLIST.map((item,i)=>`
+          <div class="chk-item" data-i="${i}">
+            <div class="t"><span class="num">${faDigit(i+1)}.</span>${esc(item)}</div>
+            <div class="seg">
+              <label><input type="radio" name="chk_${i}" value="ok"><span>سالم</span></label>
+              <label><input type="radio" name="chk_${i}" value="fail"><span>ایراد</span></label>
+              <label><input type="radio" name="chk_${i}" value="na"><span>بی‌ربط</span></label>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <div class="field" style="margin-top:16px">
+        <label for="notes">توضیحات / ایرادهای مشاهده‌شده</label>
+        <textarea id="notes" name="notes" placeholder="مثلاً: نشتی جزئی روغن زیر پمپ هیدرولیک، ارجاع به تعمیرگاه."></textarea>
+      </div>
+
+      <div id="form-msg"></div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px" class="no-print">
+        <button type="submit" class="btn primary">✔ ثبت بازرسی</button>
+        <button type="button" class="btn ghost" data-act="cancel-inspect">انصراف</button>
+      </div>
+      <p class="mount">با ثبت این فرم، بازرسی در دیتابیس مرکزی ذخیره و تاریخ بازرسی بعدی (دوره ${faDigit(eq.period)} روز) به‌روزرسانی می‌شود.</p>
+    </form>
+  </div>`;
+}
+
+function bindGuide(){
+  const cb = $('#guide-check'), go = $('#guide-go');
+  if(!cb || !go) return;
+  cb.addEventListener('change', ()=>{ go.disabled = !cb.checked; });
+}
+
+function bindInspect(){
+  const form = $('#inspect-form');
+  if(!form) return;
+
+  form.addEventListener('change', e=>{
+    if(e.target.type==='radio'){
+      const item = e.target.closest('.chk-item');
+      item.classList.toggle('flagged', !!item.querySelector('input[value=fail]:checked'));
+    }
+  });
+
+  form.addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const eq = eqById(state.inspectEqId);
+    if(!eq) return;
+    const msg = $('#form-msg');
+    const operator = form.elements['operator'].value.trim();
+
+    if(!isManager() && !(DB.test && DB.test.valid)){
+      msg.innerHTML = `<div class="notice warn">پیش از ثبت بازرسی، آزمون ارزیابی ۱۵ سوالی را انجام دهید. <button class="btn sm" data-act="to-test" style="margin-inline-start:8px">رفتن به آزمون</button></div>`;
+      scrollToEl(msg);
+      return;
+    }
+
+    if(!operator){
+      msg.innerHTML = `<div class="notice warn">نام اپراتور را وارد کنید.</div>`;
+      form.elements['operator'].focus();
+      return;
+    }
+
+    const answers = [];
+    const missing = [];
+    CHECKLIST.forEach((_,i)=>{
+      const sel = form.querySelector('input[name="chk_' + i + '"]:checked');
+      if(!sel) missing.push(i+1);
+      else answers.push({ i, v: sel.value });
+    });
+    if(missing.length){
+      msg.innerHTML = `<div class="notice warn">${faDigit(missing.length)} مورد از چک‌لیست بی‌پاسخ مانده است (شماره ${faDigit(missing.slice(0,6).join('، '))}${missing.length>6?' …':''}).</div>`;
+      const first = form.querySelector('.chk-item[data-i="' + (missing[0]-1) + '"]');
+      scrollToEl(first);
+      return;
+    }
+
+    const btn = form.querySelector('button[type=submit]');
+    btn.disabled = true;
+    btn.textContent = 'در حال ثبت…';
+    msg.innerHTML = '';
+
+    try{
+      const res = await api('/api/inspections', { method:'POST', body:{
+        eqId: eq.id,
+        operator,
+        shift: form.elements['shift'].value,
+        hours: form.elements['hours'].value === '' ? null : Number(form.elements['hours'].value),
+        answers,
+        notes: form.elements['notes'].value.trim(),
+        dateFa: jDate(Date.now()),
+        timeFa: jTime(Date.now())
+      }});
+      DB.inspections.unshift(res.inspection);
+      state.lastResult = { rec: res.inspection, eq };
+      state.view = 'done';
+      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      render();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      if(e.code === 'TEST_REQUIRED'){
+        msg.innerHTML = `<div class="notice warn">${esc(e.message)} <button class="btn sm" data-act="to-test" style="margin-inline-start:8px">رفتن به آزمون</button></div>`;
+        btn.disabled = false;
+        btn.textContent = '✔ ثبت بازرسی در داشبورد مرکزی';
+        return;
+      }
+      msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+      btn.disabled = false;
+      btn.textContent = '✔ ثبت بازرسی در داشبورد مرکزی';
+    }
+  });
+}
+
+function viewDone(){
+  const lr = state.lastResult;
+  if(!lr) return viewDashboard();
+  const { rec, eq } = lr;
+  const due = dueDate(eq, rec);
+  const fails = (rec.fails||[]).map(i=>itemsOf(rec)[i]);
+  return `
+  <div class="panel">
+    <h2>✅ بازرسی ثبت شد</h2>
+    <div class="notice ${rec.result==='pass'?'good':'warn'}">
+      ${rec.result==='pass'
+        ? `بازرسی تجهیز <b>${esc(eq.code)}</b> بدون ایراد ثبت و در داشبورد مرکزی ذخیره شد.`
+        : `بازرسی تجهیز <b>${esc(eq.code)}</b> با <b>${faDigit(fails.length)} ایراد</b> ثبت شد؛ تجهیز نیازمند تعمیر است.`}
+    </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="kpi amber"><div class="n" style="font-size:18px">${esc(eq.name)}</div><div class="l">تجهیز بازرسی‌شده</div></div>
+      <div class="kpi"><div class="n" style="font-size:18px">${jDate(rec.at)}</div><div class="l">تاریخ بازرسی — ساعت ${jTime(rec.at)}</div></div>
+      <div class="kpi ok"><div class="n" style="font-size:18px">${jDate(due)}</div><div class="l">بازرسی بعدی</div></div>
+      <div class="kpi"><div class="n" style="font-size:18px">${esc(rec.operator)}</div><div class="l">اپراتور — شیفت ${esc(rec.shift||'—')}</div></div>
+    </div>
+    ${fails.length ? `<div class="field" style="margin-top:6px"><label>موارد دارای ایراد:</label>
+      <ul class="detail-list">${fails.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>` : ''}
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px" class="no-print">
+      <button class="btn primary" data-act="home">بازگشت به داشبورد</button>
+      <button class="btn" data-act="go-inspect" data-code="${esc(eq.code)}">بازرسی مجدد همین تجهیز</button>
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   تجهیزات
+   ========================================================= */
+function viewChecklistBox(){
+  const items = DB.checklist || [];
+  return `
+  <div class="panel">
+    <h2>✅ آیتم‌های چک‌لیست بازرسی <span class="sub">${faDigit(items.length)} آیتم</span></h2>
+    <p class="hint">این فهرست همان چیزی است که اپراتور هنگام ثبت بازرسی می‌بیند و برای همه دستگاه‌ها مشترک است. بازرسی‌های قبلی با متن آیتم‌های زمان خودشان نمایش داده می‌شوند.</p>
+    <form id="chk-form" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <input type="text" id="chk-label" placeholder="متن آیتم جدید، مثلاً: سالم بودن چراغ هشدار دنده عقب" style="flex:1;min-width:240px" maxlength="160">
+      <button class="btn primary" type="submit">افزودن آیتم</button>
+    </form>
+    <div id="chk-msg"></div>
+    <div class="chk">
+      ${items.length ? items.map((c,i)=>`
+        <div class="chk-item">
+          <div class="t"><span class="num">${faDigit(i+1)}.</span>${esc(c.label)}</div>
+          <button class="btn sm ghost" data-act="del-chk" data-id="${esc(c.id)}">حذف</button>
+        </div>`).join('') : `<div class="empty">چک‌لیست خالی است؛ حداقل یک آیتم اضافه کنید.</div>`}
+    </div>
+  </div>`;
+}
+
+function eqGuide(eq){
+  if(!eq) return '';
+  const own = (eq.guide || '').trim();
+  if(own) return own;
+  return ((DB.guides || {})[eq.type] || '').trim();
+}
+
+function viewTypeGuides(){
+  const types = ['forklift','reachstacker','transtainer'];
+  return `<div class="panel">
+    <h2>📘 آموزش پیش‌فرض هر نوع دستگاه</h2>
+    <p class="hint">این متن روی همه‌ی دستگاه‌های همان نوع اعمال می‌شود. اگر برای یک دستگاه خاص آموزش اختصاصی بنویسید، متن همان دستگاه مقدم است.</p>
+    ${types.map(t=>`
+      <div class="field">
+        <label for="tg-${t}">${TYPES[t].icon} ${TYPES[t].label} <span class="eq-sub">${faDigit(DB.equipment.filter(e=>e.type===t).length)} دستگاه</span></label>
+        <textarea id="tg-${t}" rows="6">${esc((DB.guides||{})[t]||'')}</textarea>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+          <button type="button" class="btn primary sm" data-act="save-type-guide" data-type="${t}">ذخیره آموزش ${TYPES[t].label}</button>
+          <span class="eq-sub" id="tg-msg-${t}"></span>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function viewEquipment(){
+  const sf = String(state.statusFilter||'').split(',').filter(Boolean);
+  const sorted = [...DB.equipment].sort((a,b)=>String(a.code).localeCompare(String(b.code)));
+  const list = sf.length ? sorted.filter(e=>sf.includes(statusOf(e).key)) : sorted;
+  return viewChecklistBox() + `
+  <div class="panel">
+    <h2>➕ افزودن تجهیز جدید</h2>
+    <form id="eq-form">
+      <div class="grid3">
+        <div class="field"><label>کد تجهیز *</label><input type="text" name="code" placeholder="FL-104" required></div>
+        <div class="field"><label>نام تجهیز *</label><input type="text" name="name" placeholder="لیفتراک تویوتا ۲.۵ تن" required></div>
+        <div class="field"><label>نوع</label>
+          <select name="type"><option value="forklift">لیفتراک</option><option value="reachstacker">ریچ استاکر</option><option value="transtainer">ترانستینر</option></select>
+        </div>
+        <div class="field"><label>مدل</label><input type="text" name="model" placeholder="Toyota 8FG25"></div>
+        <div class="field"><label>ظرفیت</label><input type="text" name="capacity" placeholder="۲۵۰۰ kg"></div>
+        <div class="field"><label>محل استقرار</label><input type="text" name="site" placeholder="انبار مرکزی"></div>
+        <div class="field"><label>دوره بازرسی (روز) *</label><input type="number" name="period" value="30" min="1" max="365" required></div>
+      </div>
+      <div id="eq-msg"></div>
+      <button class="btn primary" type="submit">ثبت تجهیز در دیتابیس مرکزی</button>
+    </form>
+  </div>
+
+  ${viewTypeGuides()}
+
+  <div class="panel">
+    <h2>🧰 فهرست تجهیزات <span class="sub">${faDigit(list.length)} تجهیز</span></h2>
+    ${sf.length ? `<div class="notice good no-print" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span>فیلتر وضعیت: <b>${sf.map(k=>STATUS_LABELS[k]||k).join(' · ')}</b></span>
+      <button class="btn sm" data-act="clear-status">نمایش همه‌ی تجهیزات</button>
+    </div>` : ''}
+    <div class="scroll">
+      <table>
+        <thead><tr><th>کد</th><th>نام</th><th>نوع</th><th>مدل</th><th>ظرفیت</th><th>محل</th><th>دوره</th><th>وضعیت بازرسی</th><th></th></tr></thead>
+        <tbody>
+        ${list.length ? list.map(e=>{
+          const st = statusOf(e);
+          return `<tr>
+            <td class="code">${esc(e.code)}</td>
+            <td>${esc(e.name)}</td>
+            <td>${TYPES[e.type]?.icon||''} ${TYPES[e.type]?.label||esc(e.type)}</td>
+            <td class="eq-sub">${esc(e.model||'—')}</td>
+            <td class="eq-sub">${esc(e.capacity||'—')}</td>
+            <td><input type="text" id="site-${esc(e.id)}" value="${esc(e.site||'')}" placeholder="محل" style="width:104px;padding:5px 8px;font-size:12.5px"></td>
+            <td><div class="row-actions">
+              <input type="number" class="period-input" id="period-${esc(e.id)}" value="${e.period}" min="1" max="365" style="width:74px;padding:5px 8px;font-size:12.5px">
+              <button class="btn sm ghost" data-act="save-period" data-id="${esc(e.id)}">ذخیره</button>
+            </div></td>
+            <td><span class="badge ${st.cls}">${st.label}</span></td>
+            <td><div class="row-actions">
+              <button class="btn sm ghost" data-act="eq-guide" data-id="${esc(e.id)}">${(e.guide||'').trim() ? '✏️ آموزش' : '📘 آموزش'}</button>
+              <button class="btn sm" data-act="go-inspect" data-code="${esc(e.code)}">بازرسی</button>
+              <button class="btn sm ghost" data-act="del-eq" data-id="${esc(e.id)}">حذف</button>
+            </div></td>
+          </tr>
+          <tr id="guide-row-${esc(e.id)}" style="display:none"><td colspan="9">
+            <div class="field" style="margin-bottom:8px">
+              <label for="guide-${esc(e.id)}">آموزش اختصاصی این دستگاه — اگر خالی بگذارید، آموزش پیش‌فرض نوع دستگاه (${TYPES[e.type]?.label||''}) نمایش داده می‌شود</label>
+              <textarea id="guide-${esc(e.id)}" rows="5" placeholder="اگر خالی بگذارید، آموزش پیش‌فرض نوع دستگاه نمایش داده می‌شود.&#10;• این دستگاه برای چه کاری استفاده می‌شود.&#10;• تجهیزات و لوازم موردنیاز اپراتور.&#10;• نکات مهم پیش از شروع کار.">${esc(e.guide||'')}</textarea>
+              <details style="margin-top:6px"><summary class="eq-sub" style="cursor:pointer">نمایش آموزش پیش‌فرض «${TYPES[e.type]?.label||''}»</summary><div class="eq-sub" style="white-space:pre-wrap;line-height:1.9;margin-top:6px">${esc((DB.guides||{})[e.type]||'—')}</div></details>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="btn primary sm" data-act="save-guide" data-id="${esc(e.id)}">ذخیره آموزش این دستگاه</button>
+              <span class="eq-sub" id="guide-msg-${esc(e.id)}"></span>
+            </div>
+          </td></tr>`;
+        }).join('') : `<tr><td colspan="9"><div class="empty">${sf.length ? 'تجهیزی با این وضعیت پیدا نشد.' : 'تجهیزی ثبت نشده است.'}</div></td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   خروجی CSV (اکسل)
+   ========================================================= */
+function csvEscape(v){
+  const s = String(v==null?'':v);
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+
+function downloadHistoryCSV(){
+  const rows = [...DB.inspections].sort((a,b)=>b.at-a.at);
+  if(!rows.length) return;
+
+  const header = [
+    'تاریخ بازرسی','ساعت','تاریخ و ساعت (ISO)','کد تجهیز','نام تجهیز','نوع',
+    'محل','اپراتور','شیفت','کنتور ساعت‌کار','نتیجه','تعداد ایراد',
+    'موارد دارای ایراد','توضیحات','ثبت‌کننده'
+  ];
+  const lines = [header.map(csvEscape).join(',')];
+
+  rows.forEach(r=>{
+    const eq = eqById(r.eqId);
+    const fails = (r.fails||[]).map(i=>itemsOf(r)[i]).join('؛ ');
+    lines.push([
+      jDate(r.at),
+      jTime(r.at),
+      new Date(r.at).toISOString(),
+      r.eqCode,
+      eq ? eq.name : '',
+      eq ? (TYPES[eq.type]?.label || eq.type) : '',
+      eq ? (eq.site||'') : '',
+      r.operator,
+      r.shift || '',
+      r.hours == null ? '' : r.hours,
+      r.result === 'pass' ? 'سالم' : 'نیازمند تعمیر',
+      (r.fails||[]).length,
+      fails,
+      r.notes || '',
+      r.by || ''
+    ].map(csvEscape).join(','));
+  });
+
+  // BOM برای نمایش صحیح فارسی در اکسل
+  const csv = '\uFEFF' + lines.join('\r\n');
+  const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'inspection-history-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+/* =========================================================
+   تاریخچه
+   ========================================================= */
+function viewHistory(){
+  const all = [...DB.inspections].sort((a,b)=>b.at-a.at);
+  const open = state.openRecord;
+
+  return `
+  <div class="panel">
+    <h2>🗂 تاریخچه بازرسی‌ها
+      <span class="sub" style="display:flex;gap:8px;align-items:center">
+        <span>${faDigit(all.length)} رکورد</span>
+        <button class="btn sm" data-act="csv"${all.length?'':' disabled'}>⬇ دانلود CSV</button>
+      </span>
+    </h2>
+    <p class="hint">برای دیدن جزئیات چک‌لیست هر بازرسی، روی ردیف آن کلیک کنید.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>تاریخ</th><th>ساعت</th><th>تجهیز</th><th>اپراتور</th><th>شیفت</th>
+          <th>ساعت‌کار</th><th>نتیجه</th><th>ایرادها</th><th></th>
+        </tr></thead>
+        <tbody>
+        ${all.length ? all.map(r=>{
+          const eq = eqById(r.eqId);
+          const isOpen = r.id===open;
+          return `
+          <tr data-act="toggle-rec" data-id="${esc(r.id)}" style="cursor:pointer">
+            <td>${jDate(r.at)}</td>
+            <td class="eq-sub">${jTime(r.at)}</td>
+            <td>${esc(eq?eq.name:r.eqCode)} <div class="eq-sub code">${esc(r.eqCode)}</div></td>
+            <td>${esc(r.operator)}</td>
+            <td>${esc(r.shift||'—')}</td>
+            <td class="eq-sub">${r.hours!=null?faDigit(r.hours):'—'}</td>
+            <td><span class="badge ${r.result==='pass'?'b-ok':'b-bad'}">${r.result==='pass'?'سالم':'نیازمند تعمیر'}</span></td>
+            <td>${(r.fails&&r.fails.length) ? `<span class="badge b-bad">${faDigit(r.fails.length)} مورد</span>` : '<span class="badge b-info">بدون ایراد</span>'}</td>
+            <td><button class="btn sm ghost" data-act="del-rec" data-id="${esc(r.id)}" title="حذف این بازرسی">🗑</button></td>
+          </tr>
+                      ${isOpen ? `<tr class="detail-row"><td colspan="9">
+            <div style="font-size:12.5px;color:var(--muted)">جزئیات چک‌لیست — ${esc(r.operator)} — ${jDate(r.at)}${r.by?' — ثبت‌کننده: '+esc(r.by):''}</div>
+            <ul class="detail-list" style="margin-top:8px">
+              ${(r.fails||[]).map(i=>`<li>${faDigit(i+1)}. ${esc(itemsOf(r)[i])}</li>`).join('') || '<li style="background:rgba(46,204,113,.12);color:#7ff0ae;border-color:rgba(46,204,113,.3)">همه موارد سالم</li>'}
+              ${(r.answers||[]).filter(a=>a.v==='na').length ? `<li style="background:rgba(147,163,186,.12);color:#cdd7e4;border-color:#7a8aa0">${faDigit((r.answers||[]).filter(a=>a.v==='na').length)} مورد بی‌ربط</li>`:''}
+            </ul>
+            ${r.notes ? `<div style="margin-top:10px;font-size:13px"><b style="color:var(--muted);font-weight:500">توضیحات:</b> ${esc(r.notes)}</div>`:''}
+          </td></tr>` : ''}`;
+        }).join('') : `<tr><td colspan="9"><div class="empty">هنوز بازرسی‌ای ثبت نشده است.</div></td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+
+
+/* =========================================================
+   QR
+   ========================================================= */
+function inspectUrl(code){
+  const u = new URL(location.href);
+  u.search = '?eq=' + encodeURIComponent(code);
+  u.hash = '';
+  return u.toString();
+}
+
+function viewQR(){
+  const list = DB.equipment.filter(e=>e.active!==false).sort((a,b)=>String(a.code).localeCompare(String(b.code)));
+  return `
+  <div class="panel">
+    <h2>📱 کد QR تجهیزات <span class="sub">${faDigit(list.length)} کارت</span></h2>
+    <p class="hint">این کدها را چاپ و روی بدنه هر دستگاه بچسبانید. اپراتور با اسکن کد وارد سامانه می‌شود و مستقیم به فرم بازرسی همان تجهیز می‌رود.</p>
+    <div class="print-head">کارت‌های QR بازرسی — لیفتراک و ریچ استاکر</div>
+    <div class="qr-grid" id="qr-grid">
+      ${list.map(e=>`
+        <div class="qr-card">
+          <div class="box" data-qr="${esc(inspectUrl(e.code))}"></div>
+          <div class="code">${esc(e.code)}</div>
+          <div class="nm">${esc(e.name)}<br>${esc(e.site||'')}</div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px" class="no-print">
+      <button class="btn primary" data-act="print">🖨 چاپ کارت‌های QR</button>
+    </div>
+    <p class="mount">آدرس داخل QR بر اساس دامنه‌ی همین سایت ساخته می‌شود؛ کارت‌ها را از همین آدرس چاپ کنید تا روی موبایل اپراتورها باز شوند.</p>
+  </div>`;
+}
+
+function drawQRCodes(){
+  const boxes = document.querySelectorAll('[data-qr]');
+  const hasLib = typeof qrcode === 'function';
+  boxes.forEach(box=>{
+    const text = box.getAttribute('data-qr');
+    if(!hasLib){ box.innerHTML = `<div class="fallback">${esc(text)}</div>`; return; }
+    try{
+      const qr = qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      box.innerHTML = qr.createSvgTag({ cellSize:4, margin:2 });
+    }catch(err){
+      box.innerHTML = `<div class="fallback">${esc(text)}</div>`;
+    }
+  });
+}
+
+/* =========================================================
+   رویدادها
+   ========================================================= */
+document.addEventListener('click', async ev=>{
+  const navBtn = ev.target.closest('nav.tabs button');
+  if(navBtn){ state.statusFilter = ''; show(navBtn.dataset.view); return; }
+
+  const actEl = ev.target.closest('[data-act]');
+  if(!actEl) return;
+  const act = actEl.dataset.act;
+
+  if(act==='reload'){ BOOT = { status:'loading', error:'' }; render(); bootstrap(); }
+  else if(act==='home'){ state.lastResult = null; show('dashboard'); }
+  else if(act==='print'){ window.print(); }
+  else if(act==='go-qr'){ show('qr'); }
+  else if(act==='go-inspect'){
+    const eq = eqByCode(actEl.dataset.code);
+    if(eq) show('inspect', eq.id);
+  }
+  else if(act==='pick-eq'){ show('inspect', actEl.dataset.id); }
+  else if(act==='to-test'){ show('test'); }
+  else if(act==='filter-eq'){ state.typeFilter = actEl.dataset.type || ''; render(); }
+  else if(act==='to-inspect'){ state.inspectEqId = null; show('inspect'); }
+  else if(act==='cancel-inspect'){ show('inspect', null); }
+  else if(act==='csv'){ downloadHistoryCSV(); }
+  else if(act==='del-chk'){
+    const id = actEl.dataset.id;
+    const item = (DB.checklist||[]).find(c=>c.id===id);
+    if(!item) return;
+    if(!confirm('آیتم «' + item.label + '» از چک‌لیست حذف شود؟')) return;
+    actEl.disabled = true;
+    try{
+      await api('/api/checklist/' + encodeURIComponent(id), { method:'DELETE' });
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message);
+      actEl.disabled = false;
+    }
+  }
+  else if(act==='save-period'){
+    const id = actEl.dataset.id;
+    const input = document.getElementById('period-' + id);
+    if(!input) return;
+    const period = Number(input.value);
+    if(!Number.isInteger(period) || period < 1 || period > 365){
+      alert('دوره بازرسی باید عددی بین ۱ تا ۳۶۵ روز باشد.');
+      return;
+    }
+    actEl.disabled = true;
+    try{
+      const siteInput = document.getElementById('site-' + id);
+      const site = siteInput ? siteInput.value.trim() : '';
+      await api('/api/equipment/' + encodeURIComponent(id), { method:'PATCH', body:{ period, site } });
+      const eq = eqById(id);
+      if(eq){ eq.period = period; eq.site = site; }
+      render();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message);
+      actEl.disabled = false;
+    }
+  }
+  else if(act==='logout'){
+    try{ await fetch('/api/logout', { method:'POST', credentials:'same-origin' }); }catch(e){}
+    USER = null;
+    BOOT = { status:'signedout', error:'' };
+    state.view = 'inspect';
+    render();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  else if(act==='save-logo'){
+    const inp = document.getElementById('logo-file');
+    const msg = document.getElementById('logo-msg');
+    const f = inp && inp.files && inp.files[0];
+    if(!f){ msg.innerHTML = `<div class="notice warn">ابتدا یک فایل تصویری انتخاب کنید.</div>`; return; }
+    if(f.size > 200000){ msg.innerHTML = `<div class="notice warn">حجم فایل بیشتر از ۲۰۰ کیلوبایت است.</div>`; return; }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try{
+        const r = await api('/api/logo', { method:'POST', body:{ dataUrl: String(reader.result) } });
+        BOOT.logo = r.logo || '';
+        render();
+      }catch(e){
+        if(e.unauthorized){ render(); return; }
+        msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+      }
+    };
+    reader.readAsDataURL(f);
+  }
+  else if(act==='del-logo'){
+    try{
+      await api('/api/logo', { method:'POST', body:{ dataUrl:'' } });
+      BOOT.logo = '';
+      render();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message);
+    }
+  }
+  else if(act==='toggle-role' || act==='toggle-active'){
+    const code = actEl.dataset.code;
+    actEl.disabled = true;
+    try{
+      const body = act==='toggle-role'
+        ? { role: actEl.dataset.role }
+        : { active: actEl.dataset.active === '1' };
+      await api('/api/users/' + encodeURIComponent(code), { method:'PATCH', body });
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message);
+      actEl.disabled = false;
+    }
+  }
+  else if(act==='reset-pass'){
+    const code = actEl.dataset.code;
+    const pass = prompt('رمز عبور جدید برای کد پرسنلی ' + code + ':', '');
+    if(!pass) return;
+    if(pass.length < 4){ alert('رمز باید حداقل ۴ نویسه باشد.'); return; }
+    actEl.disabled = true;
+    try{
+      await api('/api/users/' + encodeURIComponent(code), { method:'PATCH', body:{ password: pass } });
+      alert('رمز کاربر ' + code + ' تغییر کرد.');
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message);
+      actEl.disabled = false;
+    }
+  }
+  else if(act==='sheet-test'){
+    const out = document.getElementById('settings-out');
+    if(out) out.innerHTML = `<div class="notice">در حال تست…</div>`;
+    try{
+      const r = await api('/api/sheet/test');
+      if(out) out.innerHTML = `<div class="notice good">اتصال برقرار است — ${faDigit(r.users)} کاربر و ${faDigit(r.inspections)} ردیف بازرسی در شیت.</div>`;
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      if(out) out.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    }
+  }
+  else if(act==='sheet-sync'){
+    const out = document.getElementById('settings-out');
+    if(out) out.innerHTML = `<div class="notice">در حال ارسال…</div>`;
+    try{
+      const r = await api('/api/sheet/sync', { method:'POST' });
+      if(out) out.innerHTML = `<div class="notice ${r.error?'warn':'good'}">${faDigit(r.sent)} مورد به شیت ارسال شد.${r.error ? ' خطا: ' + esc(r.error) : ''}</div>`;
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      if(out) out.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    }
+  }
+  else if(act==='kpi-go'){
+    state.statusFilter = actEl.dataset.status || '';
+    state.eqQ = '';
+    state.typeFilter = '';
+    show(actEl.dataset.view || 'dashboard');
+  }
+  else if(act==='clear-status'){
+    state.statusFilter = '';
+    render();
+  }
+  else if(act==='guide-ok'){
+    state.guideOk[actEl.dataset.id] = true;
+    render();
+    window.scrollTo({top:0});
+  }
+  else if(act==='eq-guide'){
+    const row = document.getElementById('guide-row-' + actEl.dataset.id);
+    if(!row) return;
+    const open = row.style.display !== 'none';
+    row.style.display = open ? 'none' : '';
+    if(!open){
+      const ta = document.getElementById('guide-' + actEl.dataset.id);
+      if(ta){ ta.focus(); if(ta.scrollIntoView) ta.scrollIntoView({block:'center', behavior:'smooth'}); }
+    }
+  }
+  else if(act==='save-type-guide'){
+    const t = actEl.dataset.type;
+    const ta = document.getElementById('tg-' + t);
+    const msg = document.getElementById('tg-msg-' + t);
+    actEl.disabled = true;
+    if(msg) msg.textContent = 'در حال ذخیره…';
+    try{
+      const res = await api('/api/guides', { method:'POST', body:{ [t]: ta ? ta.value : '' } });
+      DB.guides = Object.assign({}, DB.guides, res.guides || {});
+      if(msg) msg.textContent = 'ذخیره شد ✓ روی همه‌ی دستگاه‌های این نوع اعمال شد.';
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      if(msg) msg.textContent = e.message;
+    }
+    actEl.disabled = false;
+  }
+  else if(act==='save-guide'){
+    const id = actEl.dataset.id;
+    const ta = document.getElementById('guide-' + id);
+    actEl.disabled = true;
+    try{
+      const res = await api('/api/equipment/' + encodeURIComponent(id), { method:'PATCH', body:{ guide: ta ? ta.value : '' } });
+      const eq = eqById(id);
+      if(eq) eq.guide = res.guide || '';
+      render();
+      const again = document.getElementById('guide-row-' + id);
+      if(again) again.style.display = 'none';
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      const msg = document.getElementById('guide-msg-' + id);
+      if(msg) msg.textContent = e.message;
+      actEl.disabled = false;
+    }
+  }
+  else if(act==='del-test'){
+    if(!confirm('این نتیجه آزمون از داشبورد حذف شود؟')) return;
+    actEl.disabled = true;
+    try{
+      await api('/api/tests/' + encodeURIComponent(actEl.dataset.id), { method:'DELETE' });
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message); actEl.disabled = false;
+    }
+  }
+  else if(act==='del-op'){
+    const name = actEl.dataset.name || '';
+    if(!confirm('همه‌ی بازرسی‌های ثبت‌شده با نام «' + name + '» حذف شود؟\nاین کار قابل بازگشت نیست.')) return;
+    actEl.disabled = true;
+    try{
+      const res = await api('/api/operators?name=' + encodeURIComponent(name), { method:'DELETE' });
+      await bootstrap();
+      if(res && typeof res.removed === 'number') console.info('removed', res.removed);
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message); actEl.disabled = false;
+    }
+  }
+  else if(act==='del-visit'){
+    if(!confirm('سابقه‌ی ورود و حضور کاربر ' + actEl.dataset.code + ' پاک شود؟')) return;
+    actEl.disabled = true;
+    try{
+      await api('/api/visits?code=' + encodeURIComponent(actEl.dataset.code), { method:'DELETE' });
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message); actEl.disabled = false;
+    }
+  }
+  else if(act==='del-rec'){
+    ev.stopPropagation();
+    if(!confirm('این بازرسی از تاریخچه حذف شود؟\nاین کار قابل بازگشت نیست.')) return;
+    actEl.disabled = true;
+    try{
+      await api('/api/inspections/' + encodeURIComponent(actEl.dataset.id), { method:'DELETE' });
+      state.openRecord = null;
+      await bootstrap();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message); actEl.disabled = false;
+    }
+  }
+  else if(act==='toggle-rec'){
+    state.openRecord = state.openRecord === actEl.dataset.id ? null : actEl.dataset.id;
+    render();
+  }
+  else if(act==='del-eq'){
+    const eq = eqById(actEl.dataset.id);
+    if(!eq) return;
+    const n = inspectionsOf(eq.id).length;
+    if(!confirm(`تجهیز ${eq.code} و ${n} رکورد بازرسی آن از دیتابیس مرکزی حذف شود؟`)) return;
+    actEl.disabled = true;
+    try{
+      await api('/api/equipment/' + encodeURIComponent(eq.id), { method:'DELETE' });
+      DB.equipment = DB.equipment.filter(e=>e.id!==eq.id);
+      DB.inspections = DB.inspections.filter(i=>i.eqId!==eq.id);
+      if(state.inspectEqId===eq.id) state.inspectEqId = null;
+      render();
+    }catch(e){
+      if(e.unauthorized){ render(); return; }
+      alert(e.message);
+      actEl.disabled = false;
+    }
+  }
+});
+
+document.addEventListener('keydown', ev=>{
+  if(ev.key !== 'Enter' && ev.key !== ' ') return;
+  const el = ev.target.closest && ev.target.closest('[role="link"][data-act]');
+  if(!el) return;
+  ev.preventDefault();
+  el.click();
+});
+
+document.addEventListener('input', ev=>{
+  if(ev.target.id==='eq-filter'){
+    const val = ev.target.value;
+    const pos = ev.target.selectionStart;
+    state.eqQ = val;
+    state.inspectEqId = null;
+    $('#app').innerHTML = viewInspect();
+    const f = $('#eq-filter');
+    if(f){ f.focus(); f.value = val; try{ f.setSelectionRange(pos,pos); }catch(e){} }
+    return;
+  }
+  if(ev.target.id==='search'){
+    const val = ev.target.value;
+    const pos = ev.target.selectionStart;
+    state.q = val;
+    $('#app').innerHTML = viewDashboard();
+    const s = $('#search');
+    if(s){ s.focus(); s.value = val; try{ s.setSelectionRange(pos,pos); }catch(e){} }
+  }
+});
+
+document.addEventListener('submit', async ev=>{
+  if(ev.target.id !== 'eq-form') return;
+  ev.preventDefault();
+  const f = ev.target;
+  const msg = $('#eq-msg');
+  const val = k => (f.elements[k].value||'').trim();
+  const code = val('code').toUpperCase();
+  const name = val('name');
+  const btn = f.querySelector('button[type=submit]');
+
+  if(!code || !name){
+    msg.innerHTML = `<div class="notice warn">کد و نام تجهیز الزامی است.</div>`;
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'در حال ثبت…';
+  msg.innerHTML = '';
+  try{
+    const res = await api('/api/equipment', { method:'POST', body:{
+      code, name,
+      type: f.elements['type'].value,
+      model: val('model'),
+      capacity: val('capacity'),
+      site: val('site'),
+      period: Number(f.elements['period'].value) || 30
+    }});
+    DB.equipment.push(res.equipment);
+    state.inspectEqId = null;
+    render();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){
+    if(e.unauthorized){ render(); return; }
+    msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    btn.disabled = false;
+    btn.textContent = 'ثبت تجهیز در دیتابیس مرکزی';
+  }
+});
+
+document.addEventListener('submit', async ev=>{
+  if(ev.target.id !== 'chk-form') return;
+  ev.preventDefault();
+  const form = ev.target;
+  const input = document.getElementById('chk-label');
+  const label = (input.value || '').trim();
+  const msg = document.getElementById('chk-msg');
+  if(label.length < 3){
+    msg.innerHTML = `<div class="notice warn">متن آیتم باید حداقل ۳ نویسه باشد.</div>`;
+    return;
+  }
+  const btn = form.querySelector('button[type=submit]');
+  btn.disabled = true;
+  msg.innerHTML = '';
+  try{
+    await api('/api/checklist', { method:'POST', body:{ label } });
+    await bootstrap();
+  }catch(e){
+    if(e.unauthorized){ render(); return; }
+    msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    btn.disabled = false;
+  }
+});
+
+document.addEventListener('submit', async ev=>{
+  if(ev.target.id !== 'login-form') return;
+  ev.preventDefault();
+  const form = ev.target;
+  const code = form.elements['code'].value.trim();
+  const password = form.elements['password'].value;
+  const msg = document.getElementById('login-msg');
+  const btn = form.querySelector('button[type=submit]');
+  if(!code || !password){
+    msg.innerHTML = `<div class="notice warn">کد پرسنلی و رمز عبور را وارد کنید.</div>`;
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'در حال ورود…';
+  msg.innerHTML = '';
+  try{
+    await api('/api/login', { method:'POST', body:{ personnelCode: code, password } });
+    await bootstrap();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){
+    msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    btn.disabled = false;
+    btn.textContent = 'ورود';
+  }
+});
+
+document.addEventListener('submit', async ev=>{
+  if(ev.target.id !== 'settings-form') return;
+  ev.preventDefault();
+  const form = ev.target;
+  const url = form.elements['url'].value.trim();
+  const token = form.elements['token'].value.trim();
+  const msg = document.getElementById('settings-msg');
+  const out = document.getElementById('settings-out');
+  const btn = form.querySelector('button[type=submit]');
+  if(!url || !token){
+    msg.innerHTML = `<div class="notice warn">آدرس و رمز اتصال هر دو لازم است.</div>`;
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'در حال تست…';
+  msg.innerHTML = '';
+  try{
+    const r = await api('/api/setup', { method:'POST', body:{ url, token } });
+    BOOT.configured = true;
+    BOOT.sheetUrl = url;
+    if(BOOT.status === 'setup'){
+      BOOT.status = 'signedout';
+      render();
+    }else{
+      if(out) out.innerHTML = `<div class="notice good">اتصال برقرار است — ${faDigit(r.users)} کاربر و ${faDigit(r.inspections)} ردیف بازرسی در شیت.</div>`;
+      btn.disabled = false;
+      btn.textContent = 'ذخیره و تست اتصال';
+    }
+  }catch(e){
+    if(e.unauthorized){ render(); return; }
+    msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    btn.disabled = false;
+    btn.textContent = 'ذخیره و تست اتصال';
+  }
+});
+
+document.addEventListener('submit', async ev=>{
+  if(ev.target.id !== 'user-form') return;
+  ev.preventDefault();
+  const code = doc => document.getElementById(doc);
+  const msg = document.getElementById('user-msg');
+  const body = {
+    code: (code('nu-code').value || '').trim(),
+    name: (code('nu-name').value || '').trim(),
+    password: code('nu-pass').value || '',
+    role: code('nu-role').value
+  };
+  if(!body.code || !body.name || body.password.length < 4){
+    msg.innerHTML = `<div class="notice warn">کد پرسنلی، نام و رمز (حداقل ۴ نویسه) لازم است.</div>`;
+    return;
+  }
+  const btn = ev.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  msg.innerHTML = '';
+  try{
+    await api('/api/users', { method:'POST', body });
+    await bootstrap();
+  }catch(e){
+    if(e.unauthorized){ render(); return; }
+    msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    btn.disabled = false;
+  }
+});
+
+document.addEventListener('submit', async ev=>{
+  if(ev.target.id !== 'test-form') return;
+  ev.preventDefault();
+  const form = ev.target;
+  const qs = (DB.test && DB.test.questions) || [];
+  const answers = [];
+  const missing = [];
+  qs.forEach((q,i)=>{
+    const sel = form.querySelector('input[name="q_' + i + '"]:checked');
+    if(!sel) missing.push(i+1);
+    else answers.push({ id:q.id, choice:Number(sel.value) });
+  });
+  const msg = document.getElementById('test-msg');
+  if(missing.length){
+    msg.innerHTML = `<div class="notice warn">${faDigit(missing.length)} سوال بی‌پاسخ است (شماره ${faDigit(missing.slice(0,8).join('، '))}${missing.length>8?' …':''}).</div>`;
+    const first = form.querySelector('.test-q:nth-of-type(' + missing[0] + ')');
+    scrollToEl(first);
+    return;
+  }
+  const btn = form.querySelector('button[type=submit]');
+  btn.disabled = true;
+  btn.textContent = 'در حال ثبت…';
+  msg.innerHTML = '';
+  try{
+    const jn = jalaliNow();
+    const res = await api('/api/test', { method:'POST', body:{ answers, jm: jn.jm, jy: jn.jy } });
+    state.testResult = res.result;
+    DB.test.last = res.result;
+    DB.test.valid = !!res.valid;
+    await bootstrap();
+    state.testResult = res.result;
+    if(res.valid && state.pendingEq){
+      const pending = state.pendingEq;
+      state.pendingEq = null;
+      show('inspect', pending);
+    }else{
+      show('test');
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){
+    if(e.unauthorized){ render(); return; }
+    msg.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`;
+    btn.disabled = false;
+    btn.textContent = 'ثبت پاسخ‌ها و مشاهده نتیجه';
+  }
+});
+
+/* ---------------- ساعت ---------------- */
+function tickClock(){
+  const el = $('#clock');
+  if(!el) return;
+  const now = new Date();
+  const dateStr = new Intl.DateTimeFormat('fa-IR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(now);
+  const timeStr = new Intl.DateTimeFormat('fa-IR',{hour:'2-digit',minute:'2-digit'}).format(now);
+  el.innerHTML = `${dateStr}<br>ساعت ${timeStr}`;
+}
+
+/* ---------------- boot ---------------- */
+tickClock();
+setInterval(tickClock, 30000);
+
+async function init(){
+  try{
+    const res = await fetch('/api/config', { credentials:'same-origin', headers:{ accept:'application/json' } });
+    const cfg = await res.json();
+    if(!cfg || !cfg.configured){
+      BOOT = { status:'setup', error:'' };
+      render();
+      return;
+    }
+    BOOT.configured = true;
+  }catch(e){
+    BOOT = { status:'error', error:'ارتباط با سرور برقرار نشد.' };
+    render();
+    return;
+  }
+  await bootstrap();
+}
+
+(function boot(){
+  const code = new URLSearchParams(location.search).get('eq');
+  if(code){ state.view = 'inspect'; }
+  render();
+  init().then(()=>{
+    if(code){
+      const eq = eqByCode(code);
+      if(eq){
+        state.inspectEqId = eq.id;
+        if(!isManager() && !(DB.test && DB.test.valid)){
+          // اسکن QR: ابتدا آزمون، بعد بازرسی همین دستگاه
+          state.pendingEq = eq.id;
+          state.view = 'test';
+        }else{
+          state.view = 'inspect';
+        }
+        render();
+      }
+      else if(BOOT.status === 'ready'){
+        $('#app').insertAdjacentHTML('afterbegin',
+          `<div class="panel"><div class="notice warn">تجهیزی با کد <b>${esc(code)}</b> پیدا نشد. لطفاً از فهرست زیر انتخاب کنید.</div></div>`);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
